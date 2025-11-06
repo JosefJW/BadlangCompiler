@@ -1,3 +1,16 @@
+# Notes and Additions
+
+## Architecture
+MIPS
+
+## Build Instructions
+
+## Testing
+
+## Limitations and Issues
+
+
+
 # P5: Badlang Code Generation
 
 ## Overview

@@ -14,10 +14,29 @@ abstract class Stmt {
     R visitWhileStmt(While stmt);
   }
 
-  static record Parameter(String name, VarType type) {}
+  static record Parameter(String name, VarType type, int startCol, int endCol, int startLine, int endLine) {}
+
+
+  private final int startCol;
+  private final int endCol;
+  private final int startLine;
+  private final int endLine;
+
+  public Stmt(int startCol, int endCol, int startLine, int endLine) {
+    this.startCol = startCol;
+    this.endCol = endCol;
+    this.startLine = startLine;
+    this.endLine = endLine;
+  }
+
+  public int getStartCol() { return startCol; }
+  public int getEndCol() { return endCol; }
+  public int getStartLine() { return startLine; }
+  public int getEndLine() { return endLine; }
 
   static class Block extends Stmt {
-    Block(List<Stmt> statements) {
+    Block(List<Stmt> statements, int startCol, int endCol, int startLine, int endLine) {
+      super(startCol, endCol, startLine, endLine);
       this.statements = statements;
     }
 
@@ -30,7 +49,8 @@ abstract class Stmt {
   }
 
   static class Expression extends Stmt {
-    Expression(Expr expression) {
+    Expression(Expr expression, int startCol, int endCol, int startLine, int endLine) {
+      super(startCol, endCol, startLine, endLine);
       this.expression = expression;
     }
 
@@ -43,11 +63,16 @@ abstract class Stmt {
   }
 
   static class Function extends Stmt {
-    Function(String name, VarType returnType, List<Parameter> params, List<Stmt> body) {
+    Function(String name, VarType returnType, List<Parameter> params, List<Stmt> body, int startCol, int endCol, int startLine, int endLine, int headerStartCol, int headerEndCol, int headerStartLine, int headerEndLine) {
+      super(startCol, endCol, startLine, endLine);
       this.name = name;
       this.returnType = returnType;
       this.params = params;
       this.body = body;
+      this.headerStartCol = headerStartCol;
+      this.headerEndCol = headerEndCol;
+      this.headerStartLine = headerStartLine;
+      this.headerEndLine = headerEndLine;
     }
 
     @Override
@@ -55,14 +80,24 @@ abstract class Stmt {
       return visitor.visitFunctionStmt(this);
     }
 
+    public int getHeaderStartCol() { return headerStartCol; }
+    public int getHeaderEndCol() { return headerEndCol; }
+    public int getHeaderStartLine() { return headerStartLine; }
+    public int getHeaderEndLine() { return headerEndLine; }
+
     final String name;
     final VarType returnType;
     final List<Parameter> params;
     final List<Stmt> body;
+    final int headerStartCol;
+    final int headerEndCol;
+    final int headerStartLine;
+    final int headerEndLine;
   }
 
   static class If extends Stmt {
-    If(Expr condition, Stmt thenBranch, Stmt elseBranch) {
+    If(Expr condition, Stmt thenBranch, Stmt elseBranch, int startCol, int endCol, int startLine, int endLine) {
+      super(startCol, endCol, startLine, endLine);
       this.condition = condition;
       this.thenBranch = thenBranch;
       this.elseBranch = elseBranch;
@@ -79,7 +114,8 @@ abstract class Stmt {
   }
 
   static class Print extends Stmt {
-    Print(Expr expression) {
+    Print(Expr expression, int startCol, int endCol, int startLine, int endLine) {
+      super(startCol, endCol, startLine, endLine);
       this.expression = expression;
     }
 
@@ -92,7 +128,8 @@ abstract class Stmt {
   }
 
   static class Return extends Stmt {
-    Return(Expr value) {
+    Return(Expr value, int startCol, int endCol, int startLine, int endLine) {
+      super(startCol, endCol, startLine, endLine);
       this.value = value;
     }
 
@@ -105,10 +142,15 @@ abstract class Stmt {
   }
 
   static class Var extends Stmt {
-    Var(String name, VarType type, Expr initializer) {
+    Var(String name, VarType type, Expr initializer, int startCol, int endCol, int startLine, int endLine, int declaratorStartCol, int declaratorEndCol, int declaratorStartLine, int declaratorEndLine) {
+      super(startCol, endCol, startLine, endLine);
       this.name = name;
       this.type = type;
       this.initializer = initializer;
+      this.declaratorStartCol = declaratorStartCol;
+      this.declaratorEndCol = declaratorEndCol;
+      this.declaratorStartLine = declaratorStartLine;
+      this.declaratorEndLine = declaratorEndLine;
     }
 
     @Override
@@ -116,13 +158,23 @@ abstract class Stmt {
       return visitor.visitVarStmt(this);
     }
 
+    public int getDeclaratorStartCol() { return declaratorStartCol; }
+    public int getDeclaratorEndCol() { return declaratorEndCol; }
+    public int getDeclaratorStartLine() { return declaratorStartLine; }
+    public int getDeclaratorEndLine() { return declaratorEndLine; }
+
     final String name;
     final VarType type;
     final Expr initializer;
+    final int declaratorStartCol;
+    final int declaratorEndCol;
+    final int declaratorStartLine;
+    final int declaratorEndLine;
   }
 
   static class Assign extends Stmt {
-    Assign(String name, Expr value) {
+    Assign(String name, Expr value, int startCol, int endCol, int startLine, int endLine) {
+      super(startCol, endCol, startLine, endLine);
       this.name = name;
       this.value = value;
     }
@@ -137,7 +189,8 @@ abstract class Stmt {
   }
 
   static class While extends Stmt {
-    While(Expr condition, Stmt body) {
+    While(Expr condition, Stmt body, int startCol, int endCol, int startLine, int endLine) {
+      super(startCol, endCol, startLine, endLine);
       this.condition = condition;
       this.body = body;
     }

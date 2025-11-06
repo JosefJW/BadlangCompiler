@@ -11,8 +11,26 @@ abstract class Expr {
     R visitCallExpr(Call expr);
   }
 
+  private final int startCol;
+  private final int endCol;
+  private final int startLine;
+  private final int endLine;
+
+  public Expr(int startCol, int endCol, int startLine, int endLine) {
+    this.startCol = startCol;
+    this.endCol = endCol;
+    this.startLine = startLine;
+    this.endLine = endLine;
+  }
+
+  public int getStartCol() { return startCol; }
+  public int getEndCol() { return endCol; }
+  public int getStartLine() { return startLine; }
+  public int getEndLine() { return endLine; }
+
   static class Binary extends Expr {
-    Binary(Expr left, Operator operator, Expr right) {
+    Binary(Expr left, Operator operator, Expr right, int startCol, int endCol, int startLine, int endLine) {
+      super(startCol, endCol, startLine, endLine);
       this.left = left;
       this.operator = operator;
       this.right = right;
@@ -29,7 +47,8 @@ abstract class Expr {
   }
 
   static class Literal extends Expr {
-    Literal(Object value) {
+    Literal(Object value, int startCol, int endCol, int startLine, int endLine) {
+      super(startCol, endCol, startLine, endLine);
       this.value = value;
     }
 
@@ -42,7 +61,8 @@ abstract class Expr {
   }
 
   static class Unary extends Expr {
-    Unary(Operator operator, Expr right) {
+    Unary(Operator operator, Expr right, int startCol, int endCol, int startLine, int endLine) {
+      super(startCol, endCol, startLine, endLine);
       this.operator = operator;
       this.right = right;
     }
@@ -57,7 +77,8 @@ abstract class Expr {
   }
 
   static class Variable extends Expr {
-    Variable(String name) {
+    Variable(String name, int startCol, int endCol, int startLine, int endLine) {
+      super(startCol, endCol, startLine, endLine);
       this.name = name;
     }
 
@@ -70,7 +91,8 @@ abstract class Expr {
   }
 
   static class Call extends Expr {
-    Call(String name, List<Expr> arguments) {
+    Call(String name, List<Expr> arguments, int startCol, int endCol, int startLine, int endLine) {
+      super(startCol, endCol, startLine, endLine);
       this.name = name;
       this.arguments = arguments;
     }
