@@ -1,15 +1,26 @@
 package edu.wisc;
 
 enum TokenType {
-    TYPE, IDENTIFIER, FUN, NUMBER, BOOLEAN,
-    IF, ELSE, WHILE, RETURN, PRINT,
-    PLUS, MINUS, STAR, SLASH, 
-    AND, OR, NOT,
-    ASGN, EQUALS, NOT_EQUALS,
-    GREATER, GREATER_EQUAL, LESS, LESS_EQUAL,
-    LPAREN, RPAREN, LCURLY, RCURLY,
-    COMMA, SEMICOLON, 
-    EOF
+    TYPE("type"), IDENTIFIER("identifier"), FUN("fun"), NUMBER("number"), BOOLEAN("boolean"),
+    IF("if"), ELSE("else"), WHILE("while"), RETURN("return"), PRINT("print"),
+    PLUS("+"), MINUS("-"), STAR("*"), SLASH("/"),
+    AND("&&"), OR("||"), NOT("!"),
+    ASGN("="), EQUALS("=="), NOT_EQUALS("!="),
+    GREATER(">"), GREATER_EQUAL(">="), LESS("<"), LESS_EQUAL("<="),
+    LPAREN("("), RPAREN(")"), LCURLY("{"), RCURLY("}"),
+    COMMA(","), SEMICOLON(";"),
+    EOF("end of file");
+
+    private final String representation;
+
+    TokenType(String representation) {
+        this.representation = representation;
+    }
+
+    @Override
+    public String toString() {
+        return representation;
+    }
 }
 
 /**
