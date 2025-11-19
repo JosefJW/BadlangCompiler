@@ -4,6 +4,14 @@
 MIPS
 
 ## Build Instructions
+To compile the project, run:
+```bash
+javac -d badlang/target/classes badlang/src/main/java/edu/wisc/*.java
+```
+To run the compiled code, run:
+```bash
+java -cp badlang/target/classes edu.wisc.Main <Target Badlang File>
+```
 
 ## Testing
 
