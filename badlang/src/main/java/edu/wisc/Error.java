@@ -38,7 +38,7 @@ class Problem {
 /**
  * Provides types for all errors that are being checked
  */
-enum ErrorType { NAME, TYPE, PARSE, LEX }
+enum ErrorType { SCOPE, NAME, TYPE, PARSE, LEX }
 
 /**
  * An Error represents a collection of Problems for a given statement in the code.
@@ -89,6 +89,7 @@ class Error extends RuntimeException {
 
 		// Put the type of error
 		switch (errorType) {
+			case SCOPE: sb.append("Scope Error").append("\n"); break;
 			case NAME: sb.append("Name Error").append("\n"); break;
 			case TYPE: sb.append("Type Error").append("\n"); break;
 			case PARSE: sb.append("Syntax Error").append("\n"); break;

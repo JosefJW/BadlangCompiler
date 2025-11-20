@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -85,6 +86,12 @@ public class Main {
             }
             catch (Exception e) {
                 System.out.println(e.getMessage());
+                return;
+            }
+
+            // Check for main function
+            if (!fc.getGlobalEnvironment().isDeclared("main") || !fc.getGlobalEnvironment().isFunction("main")) {
+                System.out.println("No main function found; program must have a main function as the entry point.");
                 return;
             }
 

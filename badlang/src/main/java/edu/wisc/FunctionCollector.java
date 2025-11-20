@@ -58,11 +58,17 @@ public class FunctionCollector implements Stmt.Visitor<Void>, Expr.Visitor<Void>
 
     @Override
     public Void visitBlockStmt(Block stmt) {
+        String msg = "Global statements are not allowed; all executable statements must appear inside of a function.";
+        errors.add(new Error(Arrays.asList(new Problem(stmt.getStartCol(), stmt.getEndCol(), stmt.getStartLine(), stmt.getEndLine(), msg)), programLines.subList(stmt.getStartLine()-1, stmt.getEndLine()), ErrorType.SCOPE));
+        errorCount++;
         return null;
     }
 
     @Override
     public Void visitExpressionStmt(Expression stmt) {
+        String msg = "Global statements are not allowed; all executable statements must appear inside of a function.";
+        errors.add(new Error(Arrays.asList(new Problem(stmt.getStartCol(), stmt.getEndCol(), stmt.getStartLine(), stmt.getEndLine(), msg)), programLines.subList(stmt.getStartLine()-1, stmt.getEndLine()), ErrorType.SCOPE));
+        errorCount++;
         return null;
     }
 
@@ -79,16 +85,25 @@ public class FunctionCollector implements Stmt.Visitor<Void>, Expr.Visitor<Void>
 
     @Override
     public Void visitIfStmt(If stmt) {
+        String msg = "Global statements are not allowed; all executable statements must appear inside of a function.";
+        errors.add(new Error(Arrays.asList(new Problem(stmt.getStartCol(), stmt.getEndCol(), stmt.getStartLine(), stmt.getEndLine(), msg)), programLines.subList(stmt.getStartLine()-1, stmt.getEndLine()), ErrorType.SCOPE));
+        errorCount++;
         return null;
     }
 
     @Override
     public Void visitPrintStmt(Print stmt) {
+        String msg = "Global statements are not allowed; all executable statements must appear inside of a function.";
+        errors.add(new Error(Arrays.asList(new Problem(stmt.getStartCol(), stmt.getEndCol(), stmt.getStartLine(), stmt.getEndLine(), msg)), programLines.subList(stmt.getStartLine()-1, stmt.getEndLine()), ErrorType.SCOPE));
+        errorCount++;
         return null;
     }
 
     @Override
     public Void visitReturnStmt(Return stmt) {
+        String msg = "Global statements are not allowed; all executable statements must appear inside of a function.";
+        errors.add(new Error(Arrays.asList(new Problem(stmt.getStartCol(), stmt.getEndCol(), stmt.getStartLine(), stmt.getEndLine(), msg)), programLines.subList(stmt.getStartLine()-1, stmt.getEndLine()), ErrorType.SCOPE));
+        errorCount++;
         return null;
     }
 
@@ -99,11 +114,17 @@ public class FunctionCollector implements Stmt.Visitor<Void>, Expr.Visitor<Void>
 
     @Override
     public Void visitAssignStmt(Assign stmt) {
+        String msg = "Global statements are not allowed; all executable statements must appear inside of a function.";
+        errors.add(new Error(Arrays.asList(new Problem(stmt.getStartCol(), stmt.getEndCol(), stmt.getStartLine(), stmt.getEndLine(), msg)), programLines.subList(stmt.getStartLine()-1, stmt.getEndLine()), ErrorType.SCOPE));
+        errorCount++;
         return null;
     }
 
     @Override
     public Void visitWhileStmt(While stmt) {
+        String msg = "Global statements are not allowed; all executable statements must appear inside of a function.";
+        errors.add(new Error(Arrays.asList(new Problem(stmt.getStartCol(), stmt.getEndCol(), stmt.getStartLine(), stmt.getEndLine(), msg)), programLines.subList(stmt.getStartLine()-1, stmt.getEndLine()), ErrorType.SCOPE));
+        errorCount++;
         return null;
     }
     
