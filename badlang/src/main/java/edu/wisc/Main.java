@@ -206,6 +206,13 @@ public class Main {
             
 
             
+
+            SymbolTableConstructor STConstructor = new SymbolTableConstructor();
+            for (Stmt stmt : program) {
+                stmt.accept(STConstructor);
+            }
+
+
             // Generate code from the AST
             CodeGenerator generator = new CodeGenerator();
             String assemblyCode = generator.generate(program);

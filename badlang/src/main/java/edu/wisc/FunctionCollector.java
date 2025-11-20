@@ -53,6 +53,9 @@ public class FunctionCollector implements Stmt.Visitor<Void>, Expr.Visitor<Void>
 
     @Override
     public Void visitCallExpr(Call expr) {
+        String msg = "Global variable initial values must be constant; this is not a constant value.";
+        errors.add(new Error(Arrays.asList(new Problem(expr.getStartCol(), expr.getEndCol(), expr.getStartLine(), expr.getEndLine(), msg)), programLines.subList(expr.getStartLine()-1, expr.getEndLine()), ErrorType.SCOPE));
+        errorCount++;
         return null;
     }
 

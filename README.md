@@ -15,6 +15,19 @@ java -cp badlang/target/classes edu.wisc.Main <Target Badlang File>
 
 ## Testing
 
+## Rules
+
+### Executable Code
+All executable code must reside inside of a function. Only global variable declarations and function declarations may be outside of a function.
+
+### Main Function
+A main function must exist as the starting point of the code.
+
+### Global Variables
+The initial values for global variables must be known at compile time. That is, a global variable cannot be initialized to a function call.
+
+Setting a global variable to the result of a function call within a function is ok.
+
 ## Limitations and Issues
 
 
