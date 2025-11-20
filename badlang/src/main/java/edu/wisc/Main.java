@@ -214,7 +214,7 @@ public class Main {
 
 
             // Generate code from the AST
-            CodeGenerator generator = new CodeGenerator();
+            CodeGenerator generator = new CodeGenerator(STConstructor.getGlobalSymbolTable());
             String assemblyCode = generator.generate(program);
             
             // Write the assembly code to output file or stdout

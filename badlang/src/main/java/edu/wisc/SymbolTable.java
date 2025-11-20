@@ -1,7 +1,9 @@
 package edu.wisc;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 enum IdentifierType { VARIABLE, PARAMETER, FUNCTION }
 
@@ -82,6 +84,7 @@ class Identifier {
     public IdentifierType getIType() { return iType; }
     public boolean isFunction() { return iType == IdentifierType.FUNCTION; }
     public boolean isVariable() { return iType == IdentifierType.VARIABLE; }
+    public boolean isParameter() { return iType == IdentifierType.PARAMETER; }
 
     // For variable identifiers
     public Integer getOffset() { return offset; }
@@ -120,6 +123,31 @@ public class SymbolTable {
 
     public Boolean contains(String name) {
         return identifiers.containsKey(name);
+    }
+
+    public Identifier get(String name) {
+        if (!contains(name)) return null;
+        return identifiers.get(name);
+    }
+
+    public Set<Identifier> getVariables() {
+        Set<Identifier> variables = new HashSet<>();
+        for (Identifier value : identifiers.values()) {
+            if (value.isVariable()) {
+                variables.add(value);
+            }
+        }
+        return variables;
+    }
+
+    public Set<Identifier> getFunctions() {
+        Set<Identifier> functions = new HashSet<>();
+        for (Identifier value : identifiers.values()) {
+            if (value.isFunction()) {
+                functions.add(value);
+            }
+        }
+        return functions;
     }
 
     public Object getVariableInitialValue(String name) {
