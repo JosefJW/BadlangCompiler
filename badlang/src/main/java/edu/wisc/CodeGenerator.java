@@ -90,7 +90,6 @@ public class CodeGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>
 	private String pushRegister(String register) {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append("# Push register ").append(register).append(" onto the stack\n");
 		sb.append("addi $sp, $sp, -4\n"); // Make room on the stack
 		sb.append("sw ").append(register).append(", 0($sp)\n"); // Store the value from the register onto the stack
 
@@ -100,7 +99,6 @@ public class CodeGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>
 	private String popToRegister(String register) {
 		StringBuilder sb = new StringBuilder();
 
-		sb.append("# Pop top of the stack into ").append(register).append("\n");
 		sb.append("lw ").append(register).append(", 0($sp)\n"); // Load from top of stack
 		sb.append("addi $sp, $sp, 4\n"); // Move the stack pointer down
 
@@ -110,8 +108,6 @@ public class CodeGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>
 	@Override
 	public String visitLiteralExpr(Literal expr) {
 		StringBuilder sb = new StringBuilder();
-
-		sb.append("# Push literal value ").append(expr.value).append(" onto the stack.\n");
 
 		// Load value into register
 		sb.append("li $t0, ");
@@ -133,8 +129,6 @@ public class CodeGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>
 	@Override
 	public String visitVariableExpr(Variable expr) {
 		StringBuilder sb = new StringBuilder();
-
-		sb.append("# Push variable ").append(expr.name).append(" onto the stack.\n");
 
 		// Load variable into register
 		if (currentSymbolTable.contains(expr.name)) {
