@@ -40,7 +40,7 @@ public class SymbolTableConstructor implements Stmt.Visitor<Void>, Expr.Visitor<
 			case EQUAL: if (left instanceof Integer) return (Integer)left == (Integer)right;
 						else if (left instanceof Boolean) return (Boolean)left == (Boolean)right;
 			case NOT_EQUAL: if (left instanceof Integer) return (Integer)left != (Integer)right;
-							else if (left instanceof Boolean) return (Boolean)left == (Boolean)right;
+							else if (left instanceof Boolean) return (Boolean)left != (Boolean)right;
 			
 			case LESS: return (Integer)left < (Integer)right;
 			case LESS_EQUAL: return (Integer)left <= (Integer)right;
@@ -107,7 +107,7 @@ public class SymbolTableConstructor implements Stmt.Visitor<Void>, Expr.Visitor<
 	@Override
 	public Void visitIfStmt(If stmt) {
 		stmt.thenBranch.accept(this);
-		stmt.elseBranch.accept(this);
+		if (stmt.elseBranch != null) stmt.elseBranch.accept(this);
 		return null;
 	}
 

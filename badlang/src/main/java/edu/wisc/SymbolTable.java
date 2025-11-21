@@ -5,13 +5,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-enum IdentifierType { VARIABLE, PARAMETER, FUNCTION }
+enum STIdentifierType { VARIABLE, PARAMETER, FUNCTION }
 
-class Identifier {
+class STIdentifier {
     // For all identifiers
     private final String name;
     private final VarType type;
-    private final IdentifierType iType;
+    private final STIdentifierType iType;
 
     // For variable identifiers
     private final Integer offset;
@@ -32,7 +32,7 @@ class Identifier {
      * @param params        (Function) The parameters for the function
      * @param localVars     (Function) The symbol table for the local variables in the function
      */
-    private Identifier(String name, VarType type, IdentifierType iType, Integer offset, Object initial, SymbolTable localVars) {
+    private STIdentifier(String name, VarType type, STIdentifierType iType, Integer offset, Object initial, SymbolTable localVars) {
         this.name = name;
         this.type = type;
         this.iType = iType;
@@ -49,8 +49,8 @@ class Identifier {
      * @param offset      The location of the identifier
      * @param initial     The variable's initial value (or null)
      */
-    public static Identifier variable(String name, VarType type, Integer offset, Object initial) {
-        return new Identifier(name, type, IdentifierType.VARIABLE, offset, initial, null);
+    public static STIdentifier variable(String name, VarType type, Integer offset, Object initial) {
+        return new STIdentifier(name, type, STIdentifierType.VARIABLE, offset, initial, null);
     }
 
     /**
@@ -60,8 +60,8 @@ class Identifier {
      * @param type       The type associated with the identifier
      * @param offset     The location of the identifier
      */
-    public static Identifier parameter(String name, VarType type, Integer offset) {
-        return new Identifier(name, type, IdentifierType.PARAMETER, offset, null, null);
+    public static STIdentifier parameter(String name, VarType type, Integer offset) {
+        return new STIdentifier(name, type, STIdentifierType.PARAMETER, offset, null, null);
     }
 
     /**
@@ -74,17 +74,17 @@ class Identifier {
      * @param params      The parameters for the function
      * @param localVars   The symbol table for the local variables in the function
      */
-    public static Identifier function(String name, VarType type, SymbolTable localVars) {
-        return new Identifier(name, type, IdentifierType.FUNCTION, null, null, localVars);
+    public static STIdentifier function(String name, VarType type, SymbolTable localVars) {
+        return new STIdentifier(name, type, STIdentifierType.FUNCTION, null, null, localVars);
     }
 
     // For all identifiers
     public String getName() { return name; }
     public VarType getType() { return type; }
-    public IdentifierType getIType() { return iType; }
-    public boolean isFunction() { return iType == IdentifierType.FUNCTION; }
-    public boolean isVariable() { return iType == IdentifierType.VARIABLE; }
-    public boolean isParameter() { return iType == IdentifierType.PARAMETER; }
+    public STIdentifierType getIType() { return iType; }
+    public boolean isFunction() { return iType == STIdentifierType.FUNCTION; }
+    public boolean isVariable() { return iType == STIdentifierType.VARIABLE; }
+    public boolean isParameter() { return iType == STIdentifierType.PARAMETER; }
 
     // For variable identifiers
     public Integer getOffset() { return offset; }
@@ -92,15 +92,44 @@ class Identifier {
 
     // For function identifiers
     public SymbolTable getLocalVars() { return localVars; }
+    public Integer getLocalVarsSize() { 
+        if (localVars == null) return null;
+        return localVars.nextVariableOffset;
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(name).append(" : ").append(type).append(" (").append(iType).append(")");
+        
+        if (isVariable() || isParameter()) {
+            sb.append(", offset=").append(offset);
+            if (isVariable() && initial != null) {
+                sb.append(", initial=").append(initial);
+            }
+        }
+        
+        if (isFunction() && localVars != null) {
+            sb.append("\n  LocalVars:\n");
+            // Indent each line of the function's symbol table
+            String[] lines = localVars.toString().split("\n");
+            for (String line : lines) {
+                sb.append("    ").append(line).append("\n");
+            }
+        }
+        
+        return sb.toString();
+    }
 }
 
 public class SymbolTable {
-    private final Map<String, Identifier> identifiers = new HashMap<>(); // All identifiers defined in the scope
+    private final Map<String, STIdentifier> identifiers = new HashMap<>(); // All identifiers defined in the scope
     int nextVariableOffset = 0;
     int nextParameterOffset = 0;
 
     public void putVariable(String name, VarType type, Object initial) {
-        identifiers.put(name, Identifier.variable(name, type, nextVariableOffset, initial));
+        identifiers.put(name, STIdentifier.variable(name, type, nextVariableOffset, initial));
         switch(type) {
             case INT: nextVariableOffset += 4; break;
             case BOOL: nextVariableOffset += 4; break;
@@ -109,7 +138,7 @@ public class SymbolTable {
     }
 
     public void putParameter(String name, VarType type) {
-        identifiers.put(name, Identifier.parameter(name, type, nextParameterOffset));
+        identifiers.put(name, STIdentifier.parameter(name, type, nextParameterOffset));
         switch(type) {
             case INT: nextParameterOffset += 4; break;
             case BOOL: nextParameterOffset += 4; break;
@@ -118,21 +147,21 @@ public class SymbolTable {
     }
 
     public void putFunction(String name, VarType type, SymbolTable localVars) {
-        identifiers.put(name, Identifier.function(name, type, localVars));
+        identifiers.put(name, STIdentifier.function(name, type, localVars));
     }
 
     public Boolean contains(String name) {
         return identifiers.containsKey(name);
     }
 
-    public Identifier get(String name) {
+    public STIdentifier get(String name) {
         if (!contains(name)) return null;
         return identifiers.get(name);
     }
 
-    public Set<Identifier> getVariables() {
-        Set<Identifier> variables = new HashSet<>();
-        for (Identifier value : identifiers.values()) {
+    public Set<STIdentifier> getVariables() {
+        Set<STIdentifier> variables = new HashSet<>();
+        for (STIdentifier value : identifiers.values()) {
             if (value.isVariable()) {
                 variables.add(value);
             }
@@ -140,9 +169,9 @@ public class SymbolTable {
         return variables;
     }
 
-    public Set<Identifier> getFunctions() {
-        Set<Identifier> functions = new HashSet<>();
-        for (Identifier value : identifiers.values()) {
+    public Set<STIdentifier> getFunctions() {
+        Set<STIdentifier> functions = new HashSet<>();
+        for (STIdentifier value : identifiers.values()) {
             if (value.isFunction()) {
                 functions.add(value);
             }
@@ -160,5 +189,15 @@ public class SymbolTable {
         }
 
         return identifiers.get(name).getInitial();
+    }
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (STIdentifier id : identifiers.values()) {
+            sb.append(id.toString()).append("\n");
+        }
+        return sb.toString();
     }
 }

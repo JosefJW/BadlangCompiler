@@ -1,0 +1,90 @@
+#include <stdio.h>
+
+// Returns the pivot-th element in an array of size n
+int get(int a0, int a1, int a2, int a3, int a4, int idx) {
+    if (idx == 0) return a0;
+    if (idx == 1) return a1;
+    if (idx == 2) return a2;
+    if (idx == 3) return a3;
+    return a4;
+}
+
+// Partition logic for quicksort
+int partitionCount(int a0, int a1, int a2, int a3, int a4, int pivot) {
+    int c = 0;
+    if (a0 < pivot) c = c + 1;
+    if (a1 < pivot) c = c + 1;
+    if (a2 < pivot) c = c + 1;
+    if (a3 < pivot) c = c + 1;
+    if (a4 < pivot) c = c + 1;
+    return c;
+}
+
+// Builds a sorted array of size 5 returned via print calls
+int quicksort(int a0, int a1, int a2, int a3, int a4, int n) {
+    // Base case: if only one element, print it
+    if (n == 1) {
+        printf("%d\n", a0);
+        return 0;
+    }
+
+    int pivot = a0;
+
+    int count = partitionCount(a0, a1, a2, a3, a4, pivot);
+
+    // Build left and right partitions
+    int l0 = 0;
+    int l1 = 0;
+    int l2 = 0;
+    int l3 = 0;
+    int l4 = 0;
+
+    int r0 = 0;
+    int r1 = 0;
+    int r2 = 0;
+    int r3 = 0;
+    int r4 = 0;
+
+    int li = 0;
+    int ri = 0;
+
+    if (n >= 0 && a0 < pivot) { if (li == 0) l0 = a0; if (li == 1) l1 = a0; if (li == 2) l2 = a0; if (li == 3) l3 = a0; if (li == 4) l4 = a0; li = li + 1; }
+    if (n >= 1 && a1 < pivot) { if (li == 0) l0 = a1; if (li == 1) l1 = a1; if (li == 2) l2 = a1; if (li == 3) l3 = a1; if (li == 4) l4 = a1; li = li + 1; }
+    if (n >= 2 && a2 < pivot) { if (li == 0) l0 = a2; if (li == 1) l1 = a2; if (li == 2) l2 = a2; if (li == 3) l3 = a2; if (li == 4) l4 = a2; li = li + 1; }
+    if (n >= 3 && a3 < pivot) { if (li == 0) l0 = a3; if (li == 1) l1 = a3; if (li == 2) l2 = a3; if (li == 3) l3 = a3; if (li == 4) l4 = a3; li = li + 1; }
+    if (n >= 4 && a4 < pivot) { if (li == 0) l0 = a4; if (li == 1) l1 = a4; if (li == 2) l2 = a4; if (li == 3) l3 = a4; if (li == 4) l4 = a4; li = li + 1; }
+
+    if (n >= 0 && a0 > pivot) { if (ri == 0) r0 = a0; if (ri == 1) r1 = a0; if (ri == 2) r2 = a0; if (ri == 3) r3 = a0; if (ri == 4) r4 = a0; ri = ri + 1; }
+    if (n >= 1 && a1 > pivot) { if (ri == 0) r0 = a1; if (ri == 1) r1 = a1; if (ri == 2) r2 = a1; if (ri == 3) r3 = a1; if (ri == 4) r4 = a1; ri = ri + 1; }
+    if (n >= 2 && a2 > pivot) { if (ri == 0) r0 = a2; if (ri == 1) r1 = a2; if (ri == 2) r2 = a2; if (ri == 3) r3 = a2; if (ri == 4) r4 = a2; ri = ri + 1; }
+    if (n >= 3 && a3 > pivot) { if (ri == 0) r0 = a3; if (ri == 1) r1 = a3; if (ri == 2) r2 = a3; if (ri == 3) r3 = a3; if (ri == 4) r4 = a3; ri = ri + 1; }
+    if (n >= 4 && a4 > pivot) { if (ri == 0) r0 = a4; if (ri == 1) r1 = a4; if (ri == 2) r2 = a4; if (ri == 3) r3 = a4; if (ri == 4) r4 = a4; ri = ri + 1; }
+
+    // Sort left partition
+    if (li > 0) {
+        quicksort(l0, l1, l2, l3, l4, li);
+    }
+
+    // Print pivot
+    printf("%d\n", pivot);
+
+    // Sort right partition
+    if (ri > 0) {
+        quicksort(r0, r1, r2, r3, r4, ri);
+    }
+
+    return 0;
+}
+
+int main() {
+    // Unsorted 5-element array
+    int a0 = 42;
+    int a1 = 7;
+    int a2 = 99;
+    int a3 = -1;
+    int a4 = 12;
+
+    quicksort(a0, a1, a2, a3, a4, 5);
+
+    return 0;
+}

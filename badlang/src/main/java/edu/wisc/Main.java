@@ -205,13 +205,12 @@ public class Main {
             }
             
 
-            
-
             SymbolTableConstructor STConstructor = new SymbolTableConstructor();
             for (Stmt stmt : program) {
                 stmt.accept(STConstructor);
             }
 
+            System.out.println(STConstructor.getGlobalSymbolTable());
 
             // Generate code from the AST
             CodeGenerator generator = new CodeGenerator(STConstructor.getGlobalSymbolTable());

@@ -1,0 +1,9 @@
+fun int factorial(int val) {
+    if (val < 0) return 0;
+    else if (val == 0 || val == 1) return 1;
+    return val * factorial(val - 1);
+}
+
+fun int main() {
+    print factorial(10);
+}

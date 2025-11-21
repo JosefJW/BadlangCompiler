@@ -21,6 +21,9 @@ import edu.wisc.Stmt.While;
 public class CodeGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>{
 	private final SymbolTable globalSymbolTable;
 	private SymbolTable currentSymbolTable;
+	private String currentFunction = "main";
+	private int labelCounter = 0;
+	private static final int STACK_SPACE = 4096;
 
 	public CodeGenerator(SymbolTable globalSymbolTable) {
 		this.globalSymbolTable = globalSymbolTable;
@@ -31,13 +34,16 @@ public class CodeGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>
 		StringBuilder sb = new StringBuilder();
 		sb.append(dataSection());
 		sb.append(textSection(AST));
-		return "";
+		return sb.toString();
 	}
 
 	private String dataSection() {
 		StringBuilder sb = new StringBuilder(".data\n");
-		Set<Identifier> globalVariables = globalSymbolTable.getVariables();
-		for (Identifier var : globalVariables) {
+
+
+		// Reserve space for all global variables
+		Set<STIdentifier> globalVariables = globalSymbolTable.getVariables();
+		for (STIdentifier var : globalVariables) {
 			sb.append("_");
 			sb.append(var.getName());
 			sb.append(": ");
@@ -55,13 +61,21 @@ public class CodeGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>
 			}
 			sb.append("\n");
 		}
+
 		return sb.toString();
 	}
 
 	private String textSection(List<Stmt> AST) {
 		StringBuilder sb = new StringBuilder(".text\n");
-		sb.append("j _main\n");
 
+		// Jump to main
+		sb.append("jal _main\n");
+
+		// After returning from main, terminate the program
+		sb.append("li $v0, 10\n");
+		sb.append("syscall\n");
+
+		// Write function code
 		for (Stmt s : AST) {
 			if (s instanceof Stmt.Function) {
 				sb.append(s.accept(this));
@@ -123,7 +137,7 @@ public class CodeGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>
 		// Load variable into register
 		if (currentSymbolTable.contains(expr.name)) {
 			// Either a local variable or parameter
-			Identifier var = currentSymbolTable.get(expr.name);
+			STIdentifier var = currentSymbolTable.get(expr.name);
 			if (var.isParameter()) {
 				sb.append("lw $t0, ").append(8 + var.getOffset()).append("($fp)\n");
 			}
@@ -192,7 +206,7 @@ public class CodeGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>
 			case MULTIPLY: sb.append("multu $t0, $t1\n"); sb.append("mflo $t0\n"); break;
 
 			case AND: sb.append("and $t0, $t0, $t1\n"); break;
-			case OR: sb.append("or $t0, $t0, $1\n"); break;
+			case OR: sb.append("or $t0, $t0, $t1\n"); break;
 
 			case EQUAL: {
 				sb.append("slt $t2, $t0, $t1\n"); // If $t0 < $t1, set to 1, else 0
@@ -256,13 +270,27 @@ public class CodeGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>
 
 	@Override
 	public String visitCallExpr(Call expr) {
-		SymbolTable previousSymbolTable = currentSymbolTable;
-		// current = new symbol table
+		StringBuilder sb = new StringBuilder();
+		
+		// PROLOGUE
+		// Push parameters
+		for (int i = expr.arguments.size()-1; i >= 0; i--) {
+			// Evaluate expression (automatically placed onto stack)
+			sb.append(expr.arguments.get(i).accept(this));
+		}
 
+		// EXECUTION
+		// Jump to function
+		sb.append("jal _").append(expr.name).append("\n");
 
-		currentSymbolTable = previousSymbolTable;
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitCallExpr'");
+		// EPILOGUE
+		// Deallocate arguments
+		sb.append("addi $sp, $sp, ").append(expr.arguments.size() * 4).append("\n");
+
+		// Push return value onto stack
+		sb.append(pushRegister("$v0"));
+
+		return sb.toString();
 	}
 
 	@Override
@@ -280,21 +308,73 @@ public class CodeGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>
 	public String visitExpressionStmt(Expression stmt) {
 		StringBuilder sb = new StringBuilder();
 		
+		// Evaluate expression
 		sb.append(stmt.expression.accept(this));
+
+		// Pop the value off the stack
+		sb.append(popToRegister("$t0"));
 
 		return sb.toString();
 	}
 
 	@Override
 	public String visitFunctionStmt(Function stmt) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitFunctionStmt'");
-	}
+		StringBuilder sb = new StringBuilder();
 
-	@Override
-	public String visitIfStmt(If stmt) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitIfStmt'");
+		// PROLOGUE
+		// Function label
+		sb.append("_").append(stmt.name).append(":\n");
+
+		// Save return address
+		sb.append(pushRegister("$ra"));
+
+		// Save old frame pointer
+		sb.append(pushRegister("$fp"));
+
+		// Set new frame pointer
+		sb.append("move $fp, $sp\n");
+
+		// Make room for locals
+		Integer size = globalSymbolTable.get(stmt.name).getLocalVarsSize();
+		sb.append("addi $sp, $sp, -").append(size).append("\n");
+
+		// Save bookkeeping data
+		SymbolTable previousSymbolTable = currentSymbolTable;
+		String previousFunction = currentFunction;
+
+		// Set new bookkeeping data
+		currentSymbolTable = globalSymbolTable.get(stmt.name).getLocalVars();
+		currentFunction = stmt.name;
+
+		// BODY
+		for (Stmt s : stmt.body) {
+			sb.append(s.accept(this));
+		}
+
+		// EPILOGUE
+		// Epilogue label
+		sb.append("_").append(stmt.name).append("_epilogue").append(":\n");
+
+		// Deallocate local variable space
+		sb.append("addi $sp, $sp, ").append(size).append("\n");
+
+		// Restore return address
+		sb.append("lw $ra, 4($fp)\n");
+
+		// Restore old frame pointer
+		sb.append("lw $fp, 0($fp)\n");
+
+		// Deallocate area from stack
+		sb.append("addi $sp, $sp, 8\n");
+
+		// Return to caller
+		sb.append("jr $ra\n");
+
+		// Restore bookkeeping
+		currentSymbolTable = previousSymbolTable;
+		currentFunction = previousFunction;
+
+		return sb.toString();
 	}
 
 	@Override
@@ -313,13 +393,32 @@ public class CodeGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>
 		// Execute the syscall
 		sb.append("syscall\n");
 
+		// Set the syscall for printing a char
+		sb.append("li $v0, 11\n");
+
+		// Store "\n" for printing
+		sb.append("li $a0, 10\n");
+
+		// Print the newline
+		sb.append("syscall\n");
+
 		return sb.toString();
 	}
 
 	@Override
 	public String visitReturnStmt(Return stmt) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitReturnStmt'");
+		StringBuilder sb = new StringBuilder();
+
+		// Evaluate return value
+		sb.append(stmt.value.accept(this));
+
+		// Put the return value in $v0
+		sb.append(popToRegister("$v0"));
+
+		// Jump to the function epilogue
+		sb.append("j _").append(currentFunction).append("_epilogue\n");
+
+		return sb.toString();
 	}
 
 	@Override
@@ -335,14 +434,14 @@ public class CodeGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>
 
 			if (currentSymbolTable.contains(stmt.name)) {
 				// Local variable or parameter
-				Identifier var = currentSymbolTable.get(stmt.name);
+				STIdentifier var = currentSymbolTable.get(stmt.name);
 				if (var.isParameter()) {
 					// Load address of the parameter into $t1
-					sb.append("la $t1, ").append(8 + var.getOffset()).append("($fp)\n");
+					sb.append("addi $t1, $fp, ").append(8 + var.getOffset()).append("\n");
 				}
 				else {
 					// Load the address of the local variable into $t1
-					sb.append("la $t1, ").append(-4 - var.getOffset()).append("($fp)\n");
+					sb.append("addi $t1, $fp, ").append(-4 - var.getOffset()).append("\n");
 				}
 			}
 			else {
@@ -352,7 +451,7 @@ public class CodeGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>
 			}
 
 			// Store the value in $t0 to the address in $t1
-			sb.append("sw $t0, $t1\n");
+			sb.append("sw $t0, 0($t1)\n");
 		}
 
 		return sb.toString();
@@ -370,7 +469,7 @@ public class CodeGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>
 
 		if (currentSymbolTable.contains(stmt.name)) {
 			// Local variable or parameter
-			Identifier var = currentSymbolTable.get(stmt.name);
+			STIdentifier var = currentSymbolTable.get(stmt.name);
 			if (var.isParameter()) {
 				// Load address of the parameter into $t1
 				sb.append("la $t1, ").append(8 + var.getOffset()).append("($fp)\n");
@@ -387,14 +486,77 @@ public class CodeGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>
 		}
 
 		// Store the value in $t0 to the address in $t1
-		sb.append("sw $t0, $t1\n");
+		sb.append("sw $t0, 0($t1)\n");
 		
 		return sb.toString();
 	}
 
 	@Override
+	public String visitIfStmt(If stmt) {
+		StringBuilder sb = new StringBuilder();
+
+		int labelNum = labelCounter++; // Get unique label number for making unique labels
+
+		// Get condition value on stack
+		sb.append(stmt.condition.accept(this));
+
+		// Get condition value in register $t0
+		sb.append(popToRegister("$t0"));
+
+		// Check if condition is true
+		// If $t0 == 1, then condition is true, continue with then branch
+		// If $t0 == 0, then condition is false, jump to else branch
+		sb.append("beq $t0, $zero, if_else_").append(labelNum).append("\n");
+
+		// Put if statement then branch code
+		sb.append(stmt.thenBranch.accept(this));
+
+		// Jump to exit after then branch
+		sb.append("j if_exit_").append(labelNum).append("\n");
+
+		// Else branch label
+		sb.append("if_else_").append(labelNum).append(":\n");
+
+		// Put if statement else branch code
+		if (stmt.elseBranch != null) {
+			sb.append(stmt.elseBranch.accept(this));
+		}
+
+		// Exit label
+		sb.append("if_exit_").append(labelNum).append(":\n");
+
+		return sb.toString();
+	}
+
+	@Override
 	public String visitWhileStmt(While stmt) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'visitWhileStmt'");
+		StringBuilder sb = new StringBuilder();
+
+		int labelNum = labelCounter++; // Get unique label number for making unique labels
+
+		// Label for while loop
+		sb.append("while_start_").append(labelNum).append(":\n");
+
+		// Get condition value on stack
+		sb.append(stmt.condition.accept(this));
+
+		// Get condition value in register $t0
+		sb.append(popToRegister("$t0"));
+
+		// Check if condition is true
+		// If $t0 == 1, then condition is true, continue with while loop
+		// If $t0 == 0, then condition is false, break out of while loop
+		sb.append("beq $t0, $zero, while_exit_").append(labelNum).append("\n");
+
+		// Put while loop body code
+		sb.append(stmt.body.accept(this));
+
+		// After while loop body, jump back to while loop start
+		sb.append("j while_start_").append(labelNum).append("\n");
+
+		// Label for where to break out of while loop
+		sb.append("while_exit_").append(labelNum).append(":\n");
+
+		return sb.toString();
 	}
 }

@@ -1,0 +1,34 @@
+// 5x5 Image Convolution with 3x3 Kernel
+fun int main() {
+    // Input image (5x5)
+    int i0 = 1; int i1 = 2; int i2 = 3; int i3 = 4; int i4 = 5;
+    int i5 = 6; int i6 = 7; int i7 = 8; int i8 = 9; int i9 = 10;
+    int i10 = 11; int i11 = 12; int i12 = 13; int i13 = 14; int i14 = 15;
+    int i15 = 16; int i16 = 17; int i17 = 18; int i18 = 19; int i19 = 20;
+    int i20 = 21; int i21 = 22; int i22 = 23; int i23 = 24; int i24 = 25;
+
+    // Kernel (3x3)
+    int k0 = 0; int k1 = -1; int k2 = 0;
+    int k3 = -1; int k4 = 5; int k5 = -1;
+    int k6 = 0; int k7 = -1; int k8 = 0;
+
+    // Compute outputs (3x3)
+    int c0 = i0*k0 + i1*k1 + i2*k2 + i5*k3 + i6*k4 + i7*k5 + i10*k6 + i11*k7 + i12*k8;
+    int c1 = i1*k0 + i2*k1 + i3*k2 + i6*k3 + i7*k4 + i8*k5 + i11*k6 + i12*k7 + i13*k8;
+    int c2 = i2*k0 + i3*k1 + i4*k2 + i7*k3 + i8*k4 + i9*k5 + i12*k6 + i13*k7 + i14*k8;
+
+    int c3 = i5*k0 + i6*k1 + i7*k2 + i10*k3 + i11*k4 + i12*k5 + i15*k6 + i16*k7 + i17*k8;
+    int c4 = i6*k0 + i7*k1 + i8*k2 + i11*k3 + i12*k4 + i13*k5 + i16*k6 + i17*k7 + i18*k8;
+    int c5 = i7*k0 + i8*k1 + i9*k2 + i12*k3 + i13*k4 + i14*k5 + i17*k6 + i18*k7 + i19*k8;
+
+    int c6 = i10*k0 + i11*k1 + i12*k2 + i15*k3 + i16*k4 + i17*k5 + i20*k6 + i21*k7 + i22*k8;
+    int c7 = i11*k0 + i12*k1 + i13*k2 + i16*k3 + i17*k4 + i18*k5 + i21*k6 + i22*k7 + i23*k8;
+    int c8 = i12*k0 + i13*k1 + i14*k2 + i17*k3 + i18*k4 + i19*k5 + i22*k6 + i23*k7 + i24*k8;
+
+    // Print outputs
+    print c0; print c1; print c2;
+    print c3; print c4; print c5;
+    print c6; print c7; print c8;
+
+    return 0;
+}

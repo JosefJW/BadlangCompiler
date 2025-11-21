@@ -1,0 +1,62 @@
+fun int multiplyCell(
+    int a0,int a1,int a2,int a3,int a4,
+    int b0,int b1,int b2,int b3,int b4
+) {
+    return a0*b0 + a1*b1 + a2*b2 + a3*b3 + a4*b4;
+}
+
+fun int main() {
+    // Define Matrix A
+    int A00=1; int A01=2; int A02=3; int A03=4; int A04=5;
+    int A10=6; int A11=7; int A12=8; int A13=9; int A14=10;
+    int A20=11; int A21=12; int A22=13; int A23=14; int A24=15;
+    int A30=16; int A31=17; int A32=18; int A33=19; int A34=20;
+    int A40=21; int A41=22; int A42=23; int A43=24; int A44=25;
+
+    // Define Matrix B
+    int B00=1; int B01=0; int B02=0; int B03=0; int B04=0;
+    int B10=0; int B11=1; int B12=0; int B13=0; int B14=0;
+    int B20=0; int B21=0; int B22=1; int B23=0; int B24=0;
+    int B30=0; int B31=0; int B32=0; int B33=1; int B34=0;
+    int B40=0; int B41=0; int B42=0; int B43=0; int B44=1;
+
+    // Compute each cell of the result matrix C = A*B
+    int C00 = multiplyCell(A00,A01,A02,A03,A04, B00,B10,B20,B30,B40);
+    int C01 = multiplyCell(A00,A01,A02,A03,A04, B01,B11,B21,B31,B41);
+    int C02 = multiplyCell(A00,A01,A02,A03,A04, B02,B12,B22,B32,B42);
+    int C03 = multiplyCell(A00,A01,A02,A03,A04, B03,B13,B23,B33,B43);
+    int C04 = multiplyCell(A00,A01,A02,A03,A04, B04,B14,B24,B34,B44);
+
+    int C10 = multiplyCell(A10,A11,A12,A13,A14, B00,B10,B20,B30,B40);
+    int C11 = multiplyCell(A10,A11,A12,A13,A14, B01,B11,B21,B31,B41);
+    int C12 = multiplyCell(A10,A11,A12,A13,A14, B02,B12,B22,B32,B42);
+    int C13 = multiplyCell(A10,A11,A12,A13,A14, B03,B13,B23,B33,B43);
+    int C14 = multiplyCell(A10,A11,A12,A13,A14, B04,B14,B24,B34,B44);
+
+    int C20 = multiplyCell(A20,A21,A22,A23,A24, B00,B10,B20,B30,B40);
+    int C21 = multiplyCell(A20,A21,A22,A23,A24, B01,B11,B21,B31,B41);
+    int C22 = multiplyCell(A20,A21,A22,A23,A24, B02,B12,B22,B32,B42);
+    int C23 = multiplyCell(A20,A21,A22,A23,A24, B03,B13,B23,B33,B43);
+    int C24 = multiplyCell(A20,A21,A22,A23,A24, B04,B14,B24,B34,B44);
+
+    int C30 = multiplyCell(A30,A31,A32,A33,A34, B00,B10,B20,B30,B40);
+    int C31 = multiplyCell(A30,A31,A32,A33,A34, B01,B11,B21,B31,B41);
+    int C32 = multiplyCell(A30,A31,A32,A33,A34, B02,B12,B22,B32,B42);
+    int C33 = multiplyCell(A30,A31,A32,A33,A34, B03,B13,B23,B33,B43);
+    int C34 = multiplyCell(A30,A31,A32,A33,A34, B04,B14,B24,B34,B44);
+
+    int C40 = multiplyCell(A40,A41,A42,A43,A44, B00,B10,B20,B30,B40);
+    int C41 = multiplyCell(A40,A41,A42,A43,A44, B01,B11,B21,B31,B41);
+    int C42 = multiplyCell(A40,A41,A42,A43,A44, B02,B12,B22,B32,B42);
+    int C43 = multiplyCell(A40,A41,A42,A43,A44, B03,B13,B23,B33,B43);
+    int C44 = multiplyCell(A40,A41,A42,A43,A44, B04,B14,B24,B34,B44);
+
+    // Print the result matrix
+    print C00; print C01; print C02; print C03; print C04;
+    print C10; print C11; print C12; print C13; print C14;
+    print C20; print C21; print C22; print C23; print C24;
+    print C30; print C31; print C32; print C33; print C34;
+    print C40; print C41; print C42; print C43; print C44;
+
+    return 0;
+}
