@@ -16,6 +16,8 @@ import edu.wisc.Stmt.Expression;
 import edu.wisc.Stmt.Function;
 import edu.wisc.Stmt.If;
 import edu.wisc.Stmt.Print;
+import edu.wisc.Stmt.Println;
+import edu.wisc.Stmt.Printsp;
 import edu.wisc.Stmt.Return;
 import edu.wisc.Stmt.Var;
 import edu.wisc.Stmt.While;
@@ -338,6 +340,32 @@ public class NameChecker implements Stmt.Visitor<Void>, Expr.Visitor<Void> {
 	public Void visitPrintStmt(Print stmt) {
 		currentStatementProblems = new ArrayList<Problem>();
 		stmt.expression.accept(this);
+		addProblems(currentStatementProblems);
+		return null;
+	}
+
+	/**
+	 * Explore a print statement ('printsp [expression];')
+	 * 
+	 * @param stmt The print statement to explore
+	 */
+	@Override
+	public Void visitPrintspStmt(Printsp stmt) {
+		currentStatementProblems = new ArrayList<Problem>();
+		if (stmt.expression != null) stmt.expression.accept(this);
+		addProblems(currentStatementProblems);
+		return null;
+	}
+
+	/**
+	 * Explore a println statement ('println [expression];')
+	 * 
+	 * @param stmt The println statement to explore
+	 */
+	@Override
+	public Void visitPrintlnStmt(Println stmt) {
+		currentStatementProblems = new ArrayList<Problem>();
+		if (stmt.expression != null) stmt.expression.accept(this);
 		addProblems(currentStatementProblems);
 		return null;
 	}

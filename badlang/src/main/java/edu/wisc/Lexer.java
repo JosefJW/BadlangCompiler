@@ -94,6 +94,8 @@ public class Lexer {
 		// Reserved functions
 		else if (lexeme.equals("return")) type = TokenType.RETURN;
 		else if (lexeme.equals("print")) type = TokenType.PRINT;
+		else if (lexeme.equals("printsp")) type = TokenType.PRINTSP;
+		else if (lexeme.equals("println")) type = TokenType.PRINTLN;
 
 		// Function declarations
 		else if (lexeme.equals("fun")) type = TokenType.FUN;
@@ -264,6 +266,12 @@ public class Lexer {
 				if (curLexeme.length() > 0) tokens.add(tokenize(curLexeme.toString(), startCol));
 				curLexeme.setLength(0);
 				tokens.add(new Token(TokenType.STAR, "*", lineNumber, colNumber, colNumber+1));
+			}
+			// Modulo
+			else if (curChar == '%') {
+				if (curLexeme.length() > 0) tokens.add(tokenize(curLexeme.toString(), startCol));
+				curLexeme.setLength(0);
+				tokens.add(new Token(TokenType.MODULO, "%", lineNumber, colNumber, colNumber+1));
 			}
 			// And
 			else if (curChar == '&') {

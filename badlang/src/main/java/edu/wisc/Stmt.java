@@ -8,6 +8,8 @@ abstract class Stmt {
     R visitFunctionStmt(Function stmt);
     R visitIfStmt(If stmt);
     R visitPrintStmt(Print stmt);
+    R visitPrintspStmt(Printsp stmt);
+    R visitPrintlnStmt(Println stmt);
     R visitReturnStmt(Return stmt);
     R visitVarStmt(Var stmt);
     R visitAssignStmt(Assign stmt);
@@ -122,6 +124,34 @@ abstract class Stmt {
     @Override
     <R> R accept(Visitor<R> visitor) {
       return visitor.visitPrintStmt(this);
+    }
+
+    final Expr expression;
+  }
+
+  static class Printsp extends Stmt {
+    Printsp(Expr expression, int startCol, int endCol, int startLine, int endLine) {
+      super(startCol, endCol, startLine, endLine);
+      this.expression = expression;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitPrintspStmt(this);
+    }
+
+    final Expr expression;
+  }
+
+  static class Println extends Stmt {
+    Println(Expr expression, int startCol, int endCol, int startLine, int endLine) {
+      super(startCol, endCol, startLine, endLine);
+      this.expression = expression;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) {
+      return visitor.visitPrintlnStmt(this);
     }
 
     final Expr expression;

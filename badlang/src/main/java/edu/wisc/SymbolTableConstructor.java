@@ -11,6 +11,8 @@ import edu.wisc.Stmt.Expression;
 import edu.wisc.Stmt.Function;
 import edu.wisc.Stmt.If;
 import edu.wisc.Stmt.Print;
+import edu.wisc.Stmt.Println;
+import edu.wisc.Stmt.Printsp;
 import edu.wisc.Stmt.Return;
 import edu.wisc.Stmt.Var;
 import edu.wisc.Stmt.While;
@@ -33,6 +35,7 @@ public class SymbolTableConstructor implements Stmt.Visitor<Void>, Expr.Visitor<
 			case MINUS: return (Integer)left - (Integer)right;
 			case DIVIDE: return (Integer)left / (Integer)right;
 			case MULTIPLY: return (Integer)left * (Integer)right;
+			case MODULO: return (Integer)left % (Integer)right;
 
 			case AND: return (Boolean)left && (Boolean)right;
 			case OR: return (Boolean)left || (Boolean)right;
@@ -113,6 +116,16 @@ public class SymbolTableConstructor implements Stmt.Visitor<Void>, Expr.Visitor<
 
 	@Override
 	public Void visitPrintStmt(Print stmt) {
+		return null;
+	}
+
+	@Override
+	public Void visitPrintspStmt(Printsp stmt) {
+		return null;
+	}
+
+	@Override
+	public Void visitPrintlnStmt(Println stmt) {
 		return null;
 	}
 

@@ -45,8 +45,8 @@ fun int forward(int i0, int i1, int i2, int i3) {
     int o0 = output0(h0, h1, h2);
     int o1 = output1(h0, h1, h2);
 
-    print o0;
-    print o1;
+    printsp o0;
+    printsp o1;
 
     return 0;
 }

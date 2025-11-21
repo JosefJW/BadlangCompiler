@@ -2,8 +2,8 @@ package edu.wisc;
 
 enum TokenType {
     TYPE("type"), IDENTIFIER("identifier"), FUN("fun"), NUMBER("number"), BOOLEAN("boolean"),
-    IF("if"), ELSE("else"), WHILE("while"), RETURN("return"), PRINT("print"),
-    PLUS("+"), MINUS("-"), STAR("*"), SLASH("/"),
+    IF("if"), ELSE("else"), WHILE("while"), RETURN("return"), PRINT("print"), PRINTSP("printsp"), PRINTLN("println"),
+    PLUS("+"), MINUS("-"), STAR("*"), SLASH("/"), MODULO("%"),
     AND("&&"), OR("||"), NOT("!"),
     ASGN("="), EQUALS("=="), NOT_EQUALS("!="),
     GREATER(">"), GREATER_EQUAL(">="), LESS("<"), LESS_EQUAL("<="),

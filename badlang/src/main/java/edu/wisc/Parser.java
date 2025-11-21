@@ -103,6 +103,8 @@ public class Parser {
 
         // Reserved functions
         if (t.getType() == TokenType.PRINT) return parsePrint();
+        else if (t.getType() == TokenType.PRINTSP) return parsePrintsp();
+        else if (t.getType() == TokenType.PRINTLN) return parsePrintln();
         else if (t.getType() == TokenType.RETURN) return parseReturn();
 
         // Control flow
@@ -142,6 +144,51 @@ public class Parser {
         int endCol = expr.getEndCol();
         consumeAndCheck(TokenType.SEMICOLON);
         return new Stmt.Print(expr, startCol, endCol, startLine, endLine);
+    }
+
+    
+    /**
+     * Parses a statement of the form 'printsp [expr];'
+     * 
+     * @return The AST node for the printsp statement
+     */
+    private Stmt parsePrintsp() {
+        Token start = consumeAndCheck(TokenType.PRINTSP);
+
+        if (peekNextToken().getType() == TokenType.SEMICOLON) {
+            consumeAndCheck(TokenType.SEMICOLON);
+            return new Stmt.Printsp(null, start.getStartCol(), start.getEndCol(), start.getLineNumber(), start.getLineNumber());
+        }
+
+        int startCol = start.getStartCol();
+        int startLine = start.getLineNumber();
+        Expr expr = parseExpr();
+        int endLine = expr.getEndLine();
+        int endCol = expr.getEndCol();
+        consumeAndCheck(TokenType.SEMICOLON);
+        return new Stmt.Printsp(expr, startCol, endCol, startLine, endLine);
+    }
+    
+    /**
+     * Parses a statement of the form 'println [expr];'
+     * 
+     * @return The AST node for the println statement
+     */
+    private Stmt parsePrintln() {
+        Token start = consumeAndCheck(TokenType.PRINTLN);
+
+        if (peekNextToken().getType() == TokenType.SEMICOLON) {
+            consumeAndCheck(TokenType.SEMICOLON);
+            return new Stmt.Printsp(null, start.getStartCol(), start.getEndCol(), start.getLineNumber(), start.getLineNumber());
+        }
+
+        int startCol = start.getStartCol();
+        int startLine = start.getLineNumber();
+        Expr expr = parseExpr();
+        int endLine = expr.getEndLine();
+        int endCol = expr.getEndCol();
+        consumeAndCheck(TokenType.SEMICOLON);
+        return new Stmt.Println(expr, startCol, endCol, startLine, endLine);
     }
 
     /**
@@ -582,7 +629,7 @@ public class Parser {
         int startLine = expr.getStartLine();
         int endCol;
         int endLine;
-        while (peekNextToken().getType() == TokenType.STAR || peekNextToken().getType() == TokenType.SLASH) {
+        while (peekNextToken().getType() == TokenType.STAR || peekNextToken().getType() == TokenType.SLASH || peekNextToken().getType() == TokenType.MODULO) {
             switch (peekNextToken().getType()) {
                 case STAR: {
                     consumeAndCheck(TokenType.STAR);
@@ -599,6 +646,13 @@ public class Parser {
                     endLine = right.getEndLine();
                     expr = new Expr.Binary(expr, Operator.DIVIDE, right, startCol, endCol, startLine, endLine);
                     break;
+                }
+                case MODULO: {
+                    consumeAndCheck(TokenType.MODULO);
+                    Expr right = parseUnary();
+                    endCol = right.getEndCol();
+                    endLine = right.getEndLine();
+                    expr = new Expr.Binary(expr, Operator.MODULO, right, startCol, endCol, startLine, endLine);
                 }
                 default:
                     break;

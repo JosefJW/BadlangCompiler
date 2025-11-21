@@ -1,10 +1,8 @@
 package edu.wisc;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -17,6 +15,7 @@ import java.util.List;
  * If output-file is not specified, outputs to stdout.
  */
 public class Main {
+    static Boolean debug = false;
     
     public static void main(String[] args) {
         if (args.length < 1) {
@@ -210,7 +209,7 @@ public class Main {
                 stmt.accept(STConstructor);
             }
 
-            System.out.println(STConstructor.getGlobalSymbolTable());
+            if (debug) System.out.println(STConstructor.getGlobalSymbolTable());
 
             // Generate code from the AST
             CodeGenerator generator = new CodeGenerator(STConstructor.getGlobalSymbolTable());

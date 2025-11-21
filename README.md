@@ -37,6 +37,9 @@ sh badlang/tests/compileAll.sh
 ```
 from outside of the badlang folder.
 
+### Symbol Table
+If you would like the view the symbol table for any compiled program, simply change the class variable 'debug' in Main.java from false to true. When true, the symbol table will be printed for each compiled program.
+
 ## Rules
 
 ### Executable Code
@@ -53,11 +56,22 @@ Setting a global variable to the result of a function call within a function is 
 ## Behaviors
 
 ### Print Statements
-Print statements, such as:
+After years of tumultuous development, compiler scientists at the University of Wisconsin - Madison are happy to announce the next innovation in Badlang printing technology. The printsp and println commands!
+
 ```
-print 5;
+print [expr];
 ```
-will automatically print a newline after. This is included just for ease of viewing output since strings do not exist in Badlang.
+We all know it. We all love it. Does exactly what it says it will do, prints the expression and nothing more.
+
+```
+printsp [expr];
+```
+An exciting new edition to the output apparatus. This lovely new statement will print the expression followed by a space.
+
+```
+println [expr];
+```
+But they didn't stop there. With the println command, you can print an expression followed by a whole linebreak!
 
 ### Booleans
 For purposes such as printing, booleans will be treated as 1s and 0s, with true equalling 1 and false equalling 0.
@@ -65,6 +79,14 @@ For purposes such as printing, booleans will be treated as 1s and 0s, with true 
 This affects how the compiler internally handles booleans at the code generation step and if a boolean is printed, it will print the number equivalent.
 
 Booleans still may not be used as integers in arithmetic.
+
+## New Features
+
+### Modulo
+The modulo '%' operator is now a part of Badlang. It can be used as part of expressions and has the same precedence as multiplication and division.
+```
+10 % 3;
+```
 
 ## Limitations and Issues
 

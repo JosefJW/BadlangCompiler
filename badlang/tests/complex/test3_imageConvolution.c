@@ -28,9 +28,9 @@ int main() {
     int c8 = i12*k0 + i13*k1 + i14*k2 + i17*k3 + i18*k4 + i19*k5 + i22*k6 + i23*k7 + i24*k8;
 
     // Print outputs
-    printf("%d\n", c0); printf("%d\n", c1); printf("%d\n", c2);
-    printf("%d\n", c3); printf("%d\n", c4); printf("%d\n", c5);
-    printf("%d\n", c6); printf("%d\n", c7); printf("%d\n", c8);
+    printf("%d ", c0); printf("%d ", c1); printf("%d\n", c2);
+    printf("%d ", c3); printf("%d ", c4); printf("%d\n", c5);
+    printf("%d ", c6); printf("%d ", c7); printf("%d\n", c8);
 
     return 0;
 }

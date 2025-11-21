@@ -24,7 +24,7 @@ int partitionCount(int a0, int a1, int a2, int a3, int a4, int pivot) {
 int quicksort(int a0, int a1, int a2, int a3, int a4, int n) {
     // Base case: if only one element, print it
     if (n == 1) {
-        printf("%d\n", a0);
+        printf("%d ", a0);
         return 0;
     }
 
@@ -66,7 +66,7 @@ int quicksort(int a0, int a1, int a2, int a3, int a4, int n) {
     }
 
     // Print pivot
-    printf("%d\n", pivot);
+    printf("%d ", pivot);
 
     // Sort right partition
     if (ri > 0) {

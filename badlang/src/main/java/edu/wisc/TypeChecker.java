@@ -14,6 +14,8 @@ import edu.wisc.Stmt.Expression;
 import edu.wisc.Stmt.Function;
 import edu.wisc.Stmt.If;
 import edu.wisc.Stmt.Print;
+import edu.wisc.Stmt.Println;
+import edu.wisc.Stmt.Printsp;
 import edu.wisc.Stmt.Return;
 import edu.wisc.Stmt.Var;
 import edu.wisc.Stmt.While;
@@ -93,6 +95,32 @@ public class TypeChecker implements Stmt.Visitor<Void>, Expr.Visitor<VarType>{
 	public Void visitPrintStmt(Print stmt) {
 		currentStatementProblems = new ArrayList<Problem>();
 		stmt.expression.accept(this);
+		addProblems(currentStatementProblems);
+		return null;
+	}
+
+	/**
+	 * Perform type checking on a printsp statement
+	 * 
+	 * @param stmt The printsp statement to type check
+	 */
+	@Override
+	public Void visitPrintspStmt(Printsp stmt) {
+		currentStatementProblems = new ArrayList<Problem>();
+		if (stmt.expression != null) stmt.expression.accept(this);
+		addProblems(currentStatementProblems);
+		return null;
+	}
+
+	/**
+	 * Perform type checking on a println statement
+	 * 
+	 * @param stmt The println statement to type check
+	 */
+	@Override
+	public Void visitPrintlnStmt(Println stmt) {
+		currentStatementProblems = new ArrayList<Problem>();
+		if (stmt.expression != null) stmt.expression.accept(this);
 		addProblems(currentStatementProblems);
 		return null;
 	}
@@ -289,7 +317,8 @@ public class TypeChecker implements Stmt.Visitor<Void>, Expr.Visitor<VarType>{
 			case PLUS:
 			case MINUS:
 			case MULTIPLY:
-			case DIVIDE: {
+			case DIVIDE: 
+			case MODULO: {
 				if (leftType == VarType.ERR) {
 					if (rightType != VarType.INT) {
 						// Handle error: VarType needs to be Integer to use any of the above

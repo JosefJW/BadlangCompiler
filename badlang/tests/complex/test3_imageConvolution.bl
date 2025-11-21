@@ -26,9 +26,9 @@ fun int main() {
     int c8 = i12*k0 + i13*k1 + i14*k2 + i17*k3 + i18*k4 + i19*k5 + i22*k6 + i23*k7 + i24*k8;
 
     // Print outputs
-    print c0; print c1; print c2;
-    print c3; print c4; print c5;
-    print c6; print c7; print c8;
+    printsp c0; printsp c1; println c2;
+    printsp c3; printsp c4; println c5;
+    printsp c6; printsp c7; println c8;
 
     return 0;
 }

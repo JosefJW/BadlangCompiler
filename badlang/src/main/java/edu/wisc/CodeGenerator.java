@@ -14,6 +14,8 @@ import edu.wisc.Stmt.Expression;
 import edu.wisc.Stmt.Function;
 import edu.wisc.Stmt.If;
 import edu.wisc.Stmt.Print;
+import edu.wisc.Stmt.Println;
+import edu.wisc.Stmt.Printsp;
 import edu.wisc.Stmt.Return;
 import edu.wisc.Stmt.Var;
 import edu.wisc.Stmt.While;
@@ -204,6 +206,7 @@ public class CodeGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>
 			case MINUS: sb.append("subu $t0, $t0, $t1\n"); break;
 			case DIVIDE: sb.append("divu $t0, $t1\n"); sb.append("mflo $t0\n"); break;
 			case MULTIPLY: sb.append("multu $t0, $t1\n"); sb.append("mflo $t0\n"); break;
+			case MODULO: sb.append("divu $t0, $t1\n"); sb.append("mfhi $t0\n"); break;
 
 			case AND: sb.append("and $t0, $t0, $t1\n"); break;
 			case OR: sb.append("or $t0, $t0, $t1\n"); break;
@@ -392,6 +395,57 @@ public class CodeGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>
 
 		// Execute the syscall
 		sb.append("syscall\n");
+
+		return sb.toString();
+	}
+
+	@Override
+	public String visitPrintspStmt(Printsp stmt) {
+		StringBuilder sb = new StringBuilder();
+
+		if (stmt.expression != null) {
+			// Get the value placed on the stack
+			sb.append(stmt.expression.accept(this));
+
+			// Set the syscall for printing
+			sb.append("li $v0, 1\n");
+
+			// Pop the value into the $a0 register
+			sb.append(popToRegister("$a0"));
+
+			// Execute the syscall
+			sb.append("syscall\n");
+		}
+
+		// Set the syscall for printing a char
+		sb.append("li $v0, 11\n");
+
+		// Store a space for printing
+		sb.append("li $a0, 32\n");
+
+		// Print the space
+		sb.append("syscall\n");
+
+		return sb.toString();
+	}
+
+	@Override
+	public String visitPrintlnStmt(Println stmt) {
+		StringBuilder sb = new StringBuilder();
+
+		if (stmt.expression != null) {
+			// Get the value placed on the stack
+			sb.append(stmt.expression.accept(this));
+
+			// Set the syscall for printing
+			sb.append("li $v0, 1\n");
+
+			// Pop the value into the $a0 register
+			sb.append(popToRegister("$a0"));
+
+			// Execute the syscall
+			sb.append("syscall\n");
+		}
 
 		// Set the syscall for printing a char
 		sb.append("li $v0, 11\n");

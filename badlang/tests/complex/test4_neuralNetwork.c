@@ -47,8 +47,8 @@ int forward(int i0, int i1, int i2, int i3) {
     int o0 = output0(h0, h1, h2);
     int o1 = output1(h0, h1, h2);
 
-    printf("%d\n", o0);
-    printf("%d\n", o1);
+    printf("%d ", o0);
+    printf("%d ", o1);
 
     return 0;
 }

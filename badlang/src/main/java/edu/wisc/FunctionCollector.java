@@ -15,6 +15,8 @@ import edu.wisc.Stmt.Expression;
 import edu.wisc.Stmt.Function;
 import edu.wisc.Stmt.If;
 import edu.wisc.Stmt.Print;
+import edu.wisc.Stmt.Println;
+import edu.wisc.Stmt.Printsp;
 import edu.wisc.Stmt.Return;
 import edu.wisc.Stmt.Var;
 import edu.wisc.Stmt.While;
@@ -96,6 +98,22 @@ public class FunctionCollector implements Stmt.Visitor<Void>, Expr.Visitor<Void>
 
     @Override
     public Void visitPrintStmt(Print stmt) {
+        String msg = "Global statements are not allowed; all executable statements must appear inside of a function.";
+        errors.add(new Error(Arrays.asList(new Problem(stmt.getStartCol(), stmt.getEndCol(), stmt.getStartLine(), stmt.getEndLine(), msg)), programLines.subList(stmt.getStartLine()-1, stmt.getEndLine()), ErrorType.SCOPE));
+        errorCount++;
+        return null;
+    }
+
+    @Override
+    public Void visitPrintspStmt(Printsp stmt) {
+        String msg = "Global statements are not allowed; all executable statements must appear inside of a function.";
+        errors.add(new Error(Arrays.asList(new Problem(stmt.getStartCol(), stmt.getEndCol(), stmt.getStartLine(), stmt.getEndLine(), msg)), programLines.subList(stmt.getStartLine()-1, stmt.getEndLine()), ErrorType.SCOPE));
+        errorCount++;
+        return null;
+    }
+
+    @Override
+    public Void visitPrintlnStmt(Println stmt) {
         String msg = "Global statements are not allowed; all executable statements must appear inside of a function.";
         errors.add(new Error(Arrays.asList(new Problem(stmt.getStartCol(), stmt.getEndCol(), stmt.getStartLine(), stmt.getEndLine(), msg)), programLines.subList(stmt.getStartLine()-1, stmt.getEndLine()), ErrorType.SCOPE));
         errorCount++;

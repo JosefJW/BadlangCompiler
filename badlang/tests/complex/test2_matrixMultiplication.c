@@ -54,11 +54,11 @@ int main() {
     int C44 = multiplyCell(A40,A41,A42,A43,A44, B04,B14,B24,B34,B44);
 
     // Print the result matrix
-    printf("%d\n", C00); printf("%d\n", C01); printf("%d\n", C02); printf("%d\n", C03); printf("%d\n", C04);
-    printf("%d\n", C10); printf("%d\n", C11); printf("%d\n", C12); printf("%d\n", C13); printf("%d\n", C14);
-    printf("%d\n", C20); printf("%d\n", C21); printf("%d\n", C22); printf("%d\n", C23); printf("%d\n", C24);
-    printf("%d\n", C30); printf("%d\n", C31); printf("%d\n", C32); printf("%d\n", C33); printf("%d\n", C34);
-    printf("%d\n", C40); printf("%d\n", C41); printf("%d\n", C42); printf("%d\n", C43); printf("%d\n", C44);
+    printf("%d ", C00); printf("%d ", C01); printf("%d ", C02); printf("%d ", C03); printf("%d\n", C04);
+    printf("%d ", C10); printf("%d ", C11); printf("%d ", C12); printf("%d ", C13); printf("%d\n", C14);
+    printf("%d ", C20); printf("%d ", C21); printf("%d ", C22); printf("%d ", C23); printf("%d\n", C24);
+    printf("%d ", C30); printf("%d ", C31); printf("%d ", C32); printf("%d ", C33); printf("%d\n", C34);
+    printf("%d ", C40); printf("%d ", C41); printf("%d ", C42); printf("%d ", C43); printf("%d\n", C44);
 
     return 0;
 }

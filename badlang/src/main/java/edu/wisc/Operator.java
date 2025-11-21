@@ -6,6 +6,7 @@ public enum Operator {
     MINUS("-"),
     MULTIPLY("*"),
     DIVIDE("/"),
+    MODULO("%"),
     
     // Logical operators
     AND("&&"),
