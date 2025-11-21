@@ -13,14 +13,11 @@ To run the compiled code, run:
 java -cp badlang/target/classes edu.wisc.Main <Target Badlang File>
 ```
 
-## Compiling
-The compiler takes many steps to compile a program. These will all be described here.
+## Compilation Pipeline
 
-This compiler follows this pipeline:
+Lexing --> Parsing --> Function Collecting --> Name Analysis --> Type Analysis --> Variable Renaming --> Symbol Table Construction --> Code Generation --> MIPS Assembly
 
-Lexing --> Parsing --> Function Collecting --> Name Analysis --> Type Analysis --> Variable Renaming --> Symbol Table Construction --> Code Generation
-
-These are all described in depth below.
+For more information on any of these steps, see below.
 
 ### Lexing
 The first step is lexing. The compiler will pass over a text file containing Badlang code and separate it into valid tokens. If an unrecognized character appears, the compiler will halt and inform the user without generating any code.
@@ -170,7 +167,7 @@ QtSpim may automatically add an exception handler and other code to the beginnin
 For the complex tests, you will notice that for each .bl file, there is a corresponding .c file. These .c files are virtually identical to the .bl files, except the function definitions and print statements are switched to match with C. Since these are tests for the compiler, logic errors in any of the complex tests are not of particular importance, so these .c files are to ensure that the output from my compiler is consistent with a known working compiler rather than me getting stuck on any small logic errors in the Badlang code.
 
 ### Compiling Tests
-In the tests folder, there is the compileAll.sh file. This file simply runs my compiler on all of the tests Badlang files. It can be run with:
+In the tests folder, there is the compileAll.sh file. This file simply runs my compiler on all of the test Badlang files. It can be run with:
 ```
 sh badlang/tests/compileAll.sh
 ```

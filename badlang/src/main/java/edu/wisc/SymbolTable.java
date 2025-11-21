@@ -5,8 +5,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Used to track what type of identifier a binding is.
+ */
 enum STIdentifierType { VARIABLE, PARAMETER, FUNCTION }
 
+/**
+ * Stores the metadata associated with an identifier.
+ */
 class STIdentifier {
     // For all identifiers
     private final String name;
@@ -123,11 +129,22 @@ class STIdentifier {
     }
 }
 
+/**
+ * Stores a mapping of identifier strings to their metadata.
+ * Assumes code is semantically correct when adding values.
+ */
 public class SymbolTable {
-    private final Map<String, STIdentifier> identifiers = new HashMap<>(); // All identifiers defined in the scope
-    int nextVariableOffset = 0;
-    int nextParameterOffset = 0;
+    private final Map<String, STIdentifier> identifiers = new HashMap<>(); // Stores all currently defined identifiers
+    int nextVariableOffset = 0; // Used to track the local variable offset within functions
+    int nextParameterOffset = 0; // Used to track the parameter variable offset within functions
 
+    /**
+     * Add a variable to the symbol table.
+     * 
+     * @param name    The variable's identifier
+     * @param type    The type of the variable
+     * @param initial If applicable, store the initial value of the variable (or null)
+     */
     public void putVariable(String name, VarType type, Object initial) {
         identifiers.put(name, STIdentifier.variable(name, type, nextVariableOffset, initial));
         switch(type) {
@@ -137,6 +154,12 @@ public class SymbolTable {
         }
     }
 
+    /**
+     * Add a parameter to the symbol table.
+     * 
+     * @param name The parameter's identifier
+     * @param type The type of the parameter
+     */
     public void putParameter(String name, VarType type) {
         identifiers.put(name, STIdentifier.parameter(name, type, nextParameterOffset));
         switch(type) {
@@ -146,19 +169,44 @@ public class SymbolTable {
         }
     }
 
+    /**
+     * Add a function to the symbol table
+     * 
+     * @param name      The function's identifier
+     * @param type      The return type of the function
+     * @param localVars A symbol table containing the local variables and parameters defined for/in the function
+     */
     public void putFunction(String name, VarType type, SymbolTable localVars) {
         identifiers.put(name, STIdentifier.function(name, type, localVars));
     }
 
+    /**
+     * Check if an identifier is stored in the symbol table
+     * 
+     * @param name The identifier to check for
+     * @return true if the identifier is stored; false otherwise
+     */
     public Boolean contains(String name) {
         return identifiers.containsKey(name);
     }
 
+    /**
+     * Get the metadata for an identifier stored in the symbol table
+     * 
+     * @param name The identifier to get the metadata for
+     * @return The metadata for the identifier
+     */
     public STIdentifier get(String name) {
         if (!contains(name)) return null;
         return identifiers.get(name);
     }
 
+    /**
+     * Returns metadata for all identifiers of type variable in the symbol table.
+     * Note: Type variable is distinct from type parameter
+     * 
+     * @return A set of the metadata for all variables
+     */
     public Set<STIdentifier> getVariables() {
         Set<STIdentifier> variables = new HashSet<>();
         for (STIdentifier value : identifiers.values()) {
@@ -169,6 +217,11 @@ public class SymbolTable {
         return variables;
     }
 
+    /**
+     * Returns metadata for all identifiers of type function in the symbol table.
+     * 
+     * @return A set of the metadata for all functions
+     */
     public Set<STIdentifier> getFunctions() {
         Set<STIdentifier> functions = new HashSet<>();
         for (STIdentifier value : identifiers.values()) {
@@ -179,16 +232,36 @@ public class SymbolTable {
         return functions;
     }
 
-    public Object getVariableInitialValue(String name) {
-        // These errors should never be thrown because we already did name analysis
-        if (!identifiers.containsKey(name)) {
-            throw new RuntimeException("Error constructing symbol table.");
+    /**
+     * Returns metadata for all identifiers of type parameter in the symbol table.
+     * 
+     * @return A set of the metadata for all parameters
+     */
+    public Set<STIdentifier> getParameters() {
+        Set<STIdentifier> parameters = new HashSet<>();
+        for (STIdentifier value : identifiers.values()) {
+            if (value.isParameter()) {
+                parameters.add(value);
+            }
         }
-        if (!identifiers.get(name).isVariable()) {
-            throw new RuntimeException("Error constructing symbol table.");
-        }
+        return parameters;
+    }
 
-        return identifiers.get(name).getInitial();
+    /**
+     * Get the initial value for a variable stored in the symbol table.
+     * 
+     * @param name The identifier to get the initial value of
+     * @return The initial value of the identifier
+     */
+    public Object getVariableInitialValue(String name) {
+        STIdentifier id = identifiers.get(name);
+        if (id == null) {
+            throw new IllegalArgumentException("Variable '" + name + "' does not exist in the symbol table.");
+        }
+        if (!id.isVariable()) {
+            throw new IllegalArgumentException("'" + name + "' is not a variable.");
+        }
+        return id.getInitial();
     }
 
 
