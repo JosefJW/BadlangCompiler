@@ -87,9 +87,9 @@ abstract class Stmt {
     public int getHeaderStartLine() { return headerStartLine; }
     public int getHeaderEndLine() { return headerEndLine; }
 
-    final String name;
+    String name;
     final VarType returnType;
-    final List<Parameter> params;
+    List<Parameter> params;
     final List<Stmt> body;
     final int headerStartCol;
     final int headerEndCol;
@@ -193,7 +193,7 @@ abstract class Stmt {
     public int getDeclaratorStartLine() { return declaratorStartLine; }
     public int getDeclaratorEndLine() { return declaratorEndLine; }
 
-    final String name;
+    String name;
     final VarType type;
     final Expr initializer;
     final int declaratorStartCol;
@@ -214,7 +214,7 @@ abstract class Stmt {
       return visitor.visitAssignStmt(this);
     }
 
-    final String name;
+    String name;
     final Expr value;
   }
 

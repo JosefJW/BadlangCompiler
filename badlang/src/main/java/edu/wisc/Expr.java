@@ -87,7 +87,7 @@ abstract class Expr {
       return visitor.visitVariableExpr(this);
     }
 
-    final String name;
+    String name;
   }
 
   static class Call extends Expr {
@@ -102,7 +102,7 @@ abstract class Expr {
       return visitor.visitCallExpr(this);
     }
 
-    final String name;
+    String name;
     final List<Expr> arguments;
   }
 

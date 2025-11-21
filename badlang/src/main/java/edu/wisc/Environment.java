@@ -19,6 +19,7 @@ class Identifier {
     private final IdentifierType iType;
     private final List<Stmt.Parameter> parameters;
     private Boolean initialized;
+    private String uniqueLabel;
 
     /**
      * Initialize a new Identifier
@@ -40,6 +41,9 @@ class Identifier {
     public List<Stmt.Parameter> getParameters() { return parameters; }
     public Boolean isInitialized() { return initialized; }
     public void initialize() { initialized = true; }
+
+    public String getUniqueLabel() { return uniqueLabel; }
+    public void setUniqueLabel(String newLabel) { uniqueLabel = newLabel; }
 }
 
 /**
@@ -219,5 +223,15 @@ public class Environment {
     public void initialize(String identifier) {
         if (isDeclaredInScope(identifier)) identifiers.get(identifier).initialize();
         else parent.initialize(identifier);
+    }
+
+    public String getUniqueLabel(String identifier) {
+        if (isDeclaredInScope(identifier)) return identifiers.get(identifier).getUniqueLabel();
+        else return parent.getUniqueLabel(identifier);
+    }
+
+    public void setUniqueLabel(String identifier, String label) {
+        if (isDeclaredInScope(identifier)) identifiers.get(identifier).setUniqueLabel(label);
+        else parent.setUniqueLabel(identifier, label);
     }
 }

@@ -1,0 +1,66 @@
+int x = 100;
+int y = 200;
+int z = 300;
+
+fun int f0(int x) {
+    x = x + 1;
+    int y = x * 2;
+    println x;
+    println y;
+    println z;
+    {
+        int x = y + 10;
+        int z = x + 5;
+        println x;
+        println y;
+        println z;
+    }
+    println x;
+    println y;
+    println z;
+    return x + y + z;
+}
+
+fun int f1() {
+    println x;
+    println y;
+    println z;
+    int x = 5;
+    int y = 10;
+    int z = 15;
+    println x;
+    println y;
+    println z;
+    {
+        int x = 20;
+        int y = 25;
+        int z = 30;
+        println x;
+        println y;
+        println z;
+    }
+    println x;
+    println y;
+    println z;
+    return x + y + z;
+}
+
+fun int main() {
+    println x;
+    println y;
+    println z;
+    int x = 1;
+    int y = 2;
+    int z = 3;
+    println x;
+    println y;
+    println z;
+    int a = f0(x);
+    println a;
+    int b = f1();
+    println b;
+    println x;
+    println y;
+    println z;
+    return 0;
+}

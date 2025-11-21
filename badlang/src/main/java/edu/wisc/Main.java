@@ -15,7 +15,7 @@ import java.util.List;
  * If output-file is not specified, outputs to stdout.
  */
 public class Main {
-    static Boolean debug = false;
+    static Boolean debug = true;
     
     public static void main(String[] args) {
         if (args.length < 1) {
@@ -201,6 +201,13 @@ public class Main {
                 System.out.println((nc.errorCount + fc.errorCount + tc.errorCount) + " errors");
                 System.out.println();
                 return; // Do not continue compiling if there were errors
+            }
+
+
+
+            VariableRenamer vr = new VariableRenamer(fc.getGlobalEnvironment());
+            for (Stmt stmt : program) {
+                stmt.accept(vr);
             }
             
 
