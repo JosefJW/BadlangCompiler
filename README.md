@@ -17,6 +17,7 @@ java -cp badlang/target/classes edu.wisc.Main <Target Badlang File>
 The compiler takes many steps to compile a program. These will all be described here.
 
 This compiler follows this pipeline:
+
 Lexing --> Parsing --> Function Collecting --> Name Analysis --> Type Analysis --> Variable Renaming --> Symbol Table Construction --> Code Generation
 
 These are all described in depth below.
@@ -34,7 +35,7 @@ After parsing, the compiler goes through the top level of the AST, collecting fu
 After collecting the function signatures, the compiler will then perform name analysis. Name analysis ensures that variables are declared in an appropriate scope when the variable is used. It also looks for name collisions between variables and functions. Any issues discovered here will be stored as an Error, but the compiler will continue with Type Analysis before halting.
 
 Please note: Although function signatures are collected first, when name collisions (such as a variable and function sharing the same name), the compiler will adhere to declaration order for reporting the error.
-That is, for the following code:
+That is, the following code:
 ```{badlang}
 int x = 5;
 
@@ -70,6 +71,7 @@ Due to scoping rules, this program prints "575":
 - The first x refers to the outer variable.
 - The second x refers to the inner (shadowing) variable.
 - The last x again refers to the outer variable.
+
 However, since our symbol table is unscoped, we cannot reference all of these as "x" because the outer and inner x will then map to the same thing. So, variable renaming may remake this function as:
 ```
 fun int main() {
@@ -124,6 +126,7 @@ add_1 : int (FUNCTION)
     addition3_8 : int (VARIABLE), offset=8
 ```
 Notice that each identifier now has a "_[#]" appended to it. Remember that this is done by the Variable Renamer to ensure unique identifiers.
+
 Additionally, notice that the local variables are separate from the global variables and that the local variable offsets are separate from the parameter offsets.
 
 ### Code Generation
@@ -191,24 +194,6 @@ Setting a global variable to the result of a function call within a function is 
 
 ## Behaviors
 
-### Print Statements
-After years of tumultuous development, compiler scientists at the University of Wisconsin - Madison are happy to announce the next innovation in Badlang printing technology. The printsp and println commands!
-
-```
-print [expr];
-```
-We all know it. We all love it. Does exactly what it says it will do, prints the expression and nothing more.
-
-```
-printsp [expr];
-```
-An exciting new edition to the output apparatus. This lovely new statement will print the expression followed by a space.
-
-```
-println [expr];
-```
-But they didn't stop there. With the println command, you can print an expression followed by a whole linebreak!
-
 ### Booleans
 For purposes such as printing, booleans will be treated as 1s and 0s, with true equalling 1 and false equalling 0.
 
@@ -223,6 +208,21 @@ The modulo '%' operator is now a part of Badlang. It can be used as part of expr
 ```
 10 % 3;
 ```
+
+### New Print Statements
+Along with the regular print statement, we are introducing two new print statements to Badlang.
+
+#### printsp
+```
+printsp [expr];
+```
+The printsp statement will print the result of its given expression, followed by a space.
+
+#### println
+```
+println [expr];
+```
+The println statement will print the result of its given expression, followed by a newline.
 
 ## Limitations and Issues
 
