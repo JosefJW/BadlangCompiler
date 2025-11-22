@@ -1,3 +1,7 @@
+/*
+Test having two mutually recursive functions.
+*/
+
 fun bool isEven(int n) {
     if (n == 0) return true;
     return isOdd(n - 1);

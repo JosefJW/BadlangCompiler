@@ -200,6 +200,6 @@ fun int f49(int n) {
 }
 
 fun int main() {
-    print f0(10591);
+    print f0(12345);
     return 0;
 }

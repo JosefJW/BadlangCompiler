@@ -1,11 +1,15 @@
+/*
+Test variable scope and shadowing
+*/
+
 int x = 5;
 
 fun int main() {
     if (x == 5) {
-        print x;
+        println x;
         int x = 4;
-        print x;
+        println x;
     }
-    print x;
+    println x;
     return 0;
 }

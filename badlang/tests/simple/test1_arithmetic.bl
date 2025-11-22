@@ -1,3 +1,7 @@
+/*
+Test the arithmetic operators.
+*/
+
 fun int main() {
     println 1 + 2;
     println 5 - 3;

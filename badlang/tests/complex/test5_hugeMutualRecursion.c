@@ -253,6 +253,6 @@ int f49(int n) {
 }
 
 int main() {
-    printf("%d", f0(10591));
+    printf("%d", f0(12345));
     return 0;
 }

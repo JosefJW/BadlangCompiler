@@ -1,9 +1,7 @@
-# Notes and Additions
-
-## Architecture
+# Architecture
 MIPS
 
-## Build Instructions
+# Build Instructions
 To compile the project, run:
 ```bash
 javac -d badlang/target/classes badlang/src/main/java/edu/wisc/*.java
@@ -13,22 +11,22 @@ To run the compiled code, run:
 java -cp badlang/target/classes edu.wisc.Main <Target Badlang File>
 ```
 
-## Compilation Pipeline
+# Compilation Pipeline
 
 Lexing --> Parsing --> Function Collecting --> Name Analysis --> Type Analysis --> Variable Renaming --> Symbol Table Construction --> Code Generation --> MIPS Assembly
 
 For more information on any of these steps, see below.
 
-### Lexing
+## Lexing
 The first step is lexing. The compiler will pass over a text file containing Badlang code and separate it into valid tokens. If an unrecognized character appears, the compiler will halt and inform the user without generating any code.
 
-### Parsing
+## Parsing
 After lexing, the tokens are parsed into expressions and statements. This is the step where the AST is formed. If an unrecognized string of tokens is found, the compiler will halt and inform the user without generating any code.
 
-### Function Collecting
+## Function Collecting
 After parsing, the compiler goes through the top level of the AST, collecting function signatures and storing them in an environment. This is done to hoist the functions, so that they can be called from anywhere in the code. Due to the functions being hoisted, this will also generate new labels for the functions to be referred by during the Variable Renaming step. If a function is declared twice, the compiler will store this information as an Error, but it will continue with Name Analysis and Type Analysis before halting.
 
-### Name Analysis
+## Name Analysis
 After collecting the function signatures, the compiler will then perform name analysis. Name analysis ensures that variables are declared in an appropriate scope when the variable is used. It also looks for name collisions between variables and functions. Any issues discovered here will be stored as an Error, but the compiler will continue with Type Analysis before halting.
 
 Please note: Although function signatures are collected first, when name collisions (such as a variable and function sharing the same name), the compiler will adhere to declaration order for reporting the error.
@@ -48,10 +46,10 @@ Name Error
 ```
 Although the function collecting step happens before any variables are saved, the Name Error will still be reported for the function 'x()', not the variable 'x'.
 
-### Type Analysis
+## Type Analysis
 After performing name analysis, the compiler will perform type analysis. Type analysis ensures that all literals, variables, and function calls are used in ways that are consistent with their type. Any issues discovered here will be stored as an error. After type analysis, if there were any errors found during Function Collecting, Name Analysis, or Type Analysis, they will be reported in an Error Report and the compiler will halt.
 
-### Variable Renaming
+## Variable Renaming
 If there were no errors found with any of the above, we know that the Badlang code is semantically correct. With that, we can start the process of compiling the code to MIPS. Our first step in this part of the process is giving all the variables and functions unique identifiers. We do this so that we can use an unscoped symbol table when performing the actual code generation. Here is an example:
 ```
 fun int main() {
@@ -83,7 +81,7 @@ fun int main() {
 ```
 The variable renamer walks the AST with full knowledge of scope, generating and assigning unique identifiers for all bindings. Each usage of an identifier is then rewritten to use the unique name associated with the identifier at that scope. After renaming, all identifiers in the program are globally unique, which greatly simplifies what our symbol table will need to track.
 
-### Symbol Table Construction
+## Symbol Table Construction
 With each identifier having a completely unique binding, we can begin constructing the symbol table. 
 
 For variables, the symbol table stores:
@@ -126,13 +124,13 @@ Notice that each identifier now has a "_[#]" appended to it. Remember that this 
 
 Additionally, notice that the local variables are separate from the global variables and that the local variable offsets are separate from the parameter offsets.
 
-### Code Generation
+## Code Generation
 Finally, we turn the AST into MIPS assembly code. 
 
-#### Globals
+### Globals
 Global variables are emitted into the MIPS .data section. Each global is assigned a label using its unique identifier, and its initial value is emitted using .word.
 
-#### Functions
+### Functions
 Every function is emitted into the .text section under a label assigned by its unique identifier. Each function follows a uniform calling convention:
 1. Prologue
 - Allocates a stack frame large enough to hold all local variables.
@@ -144,14 +142,14 @@ Every function is emitted into the .text section under a label assigned by its u
 - Deallocates the stack frame.
 - Jumps to $ra.
 
-#### Expressions
+### Expressions
 Expressions are solved with a stack-based approach.
 - Literal and variable values are pushed onto the stack.
 - Operand expressions pop the values from the stack, perform the operation, and push the result.
 
-## Testing
+# Testing
 
-### QtSpim
+## QtSpim
 All assembly code was tested using QtSpim MIPS simulator.
 
 QtSpim may automatically add an exception handler and other code to the beginning of a file. To avoid this, assembly generated by this compiler should be run without QtSpim’s exception handler enabled. To disable this:
@@ -163,151 +161,63 @@ QtSpim may automatically add an exception handler and other code to the beginnin
 6. In the top-left of QtSpim, press the net icon to reinitialize the simulator.
 7. Load and run your assembly files.
 
-### Complex Tests
+## Simple Tests
+Each simple test, for the most part, focuses on testing one feature. A simple one sentence explanation can be found at the top of each simple test.
+
+## Complex Tests
 For the complex tests, you will notice that for each .bl file, there is a corresponding .c file. These .c files are virtually identical to the .bl files, except the function definitions and print statements are switched to match with C. Since these are tests for the compiler, logic errors in any of the complex tests are not of particular importance, so these .c files are to ensure that the output from my compiler is consistent with a known working compiler rather than me getting stuck on any small logic errors in the Badlang code.
 
-### Compiling Tests
+## Compiling Tests
 In the tests folder, there is the compileAll.sh file. This file simply runs my compiler on all of the test Badlang files. It can be run with:
 ```
 sh badlang/tests/compileAll.sh
 ```
 from outside of the badlang folder.
 
-### Symbol Table
+## Symbol Table
 If you would like to view the symbol table for any compiled program, simply change the class variable 'debug' in Main.java from false to true. When true, the symbol table will be printed for each compiled program.
 
-## Rules
+# Rules
 
-### Executable Code
+## Executable Code
 All executable code must reside inside of a function. Only global variable declarations and function declarations may be outside of a function.
 
-### Main Function
+## Main Function
 A main function must exist as the starting point of the code.
 
-### Global Variables
+## Global Variables
 The initial values for global variables must be known at compile time. That is, a global variable cannot be initialized to a function call.
 
 Setting a global variable to the result of a function call within a function is ok.
 
-## Behaviors
+# Behaviors
 
-### Booleans
+## Booleans
 For purposes such as printing, booleans will be treated as 1s and 0s, with true equalling 1 and false equalling 0.
 
 This affects how the compiler internally handles booleans at the code generation step and if a boolean is printed, it will print the number equivalent.
 
 Booleans still may not be used as integers in arithmetic.
 
-## New Features
+# New Features
 
-### Modulo
+## Modulo
 The modulo '%' operator is now a part of Badlang. It can be used as part of expressions and has the same precedence as multiplication and division.
 ```
 10 % 3;
 ```
 
-### New Print Statements
+## New Print Statements
 Along with the regular print statement, we are introducing two new print statements to Badlang.
 
-#### printsp
+### printsp
 ```
 printsp [expr];
 ```
 The printsp statement will print the result of its given expression, followed by a space.
 
-#### println
+### println
 ```
 println [expr];
 ```
 The println statement will print the result of its given expression, followed by a newline.
-
-## Limitations and Issues
-
-
-
-# P5: Badlang Code Generation
-
-## Overview
-
-**Congratulations!** You've made it to the final programming assignment in the compilers course! 
-
-In this assignment, you will implement **machine code generation** for the badlang programming language. This is where your compiler finally produces executable code that can run on real (or simulated) hardware. You will transform your abstract syntax tree (AST) into actual assembly instructions.
-
-This assignment is **open-ended** by design. Code generation is complex and requires you to make many design decisions. You have the freedom to choose your target architecture and implementation strategy.
-
-## Target Architecture: Your Choice!
-
-You have two options for your target architecture:
-
- **Option 1: MIPS Assembly** (Recommended)
-- Covered extensively in lecture
-- Simple, regular instruction set
-- Easy to test with SPIM simulator
-
-
- **Option 2: x86 Assembly**
-- More complex but widely used
-
-Choose the architecture you're more comfortable with. MIPS is recommended if you followed along with the lecture examples.
-
-## Requirements
-
-1. **Generate Valid Assembly Code**
-   - Your compiler must output valid assembly code for your chosen architecture that:
-     - Can be assembled and run (in a simulator or on real hardware)
-     - Correctly implements the semantics of the badlang program
-     - Produces the expected output
-
-2. **Testing Strategy**
-   - Since testing is not simple, you will need to
-     - Use a simulator (e.g., SPIM for MIPS)
-     - Create test programs and verify their output
-     - Document your testing approach
-
-## Deliverables
-
-Submit a zip file of the `P5` folder containing:
-
-1. **Your source code**: All Java files for your code generator
-2. **Tests**: At least 10 example programs that demonstrate different language features
-3. **README additions**: Add a section to this README documenting:
-   - Which architecture you chose (MIPS or x86)
-   - How to build and run your compiler
-   - How you tested the generated code
-   - Known limitations or issues
-   - **If you worked with a partner, include both names at the top**
-
-## Grading Rubric
-
-Your assignment will be graded on:
-
-### 1. **Correctness (50%)**
-- Does the generated code run correctly?
-- Does it produce the expected output?
-
-### 2. **Completeness (25%)**
-- Are all language features implemented?
-- Literals, variables, expressions
-- Control flow (if, while)
-- Functions and calling conventions
-- Print statements
-
-### 3. **Code Quality (10%)**
-- Is your code generator well-organized?
-- Is the generated assembly code readable?
-- Did you follow good software engineering practices?
-- Is your code well-commented?
-
-### 4. **Testing (15%)**
-- Did you create comprehensive test programs?
-- Did you test all language features?
-- Did you document your testing approach?
-
-**Remember**: This assignment is open-ended by design. There's no single "correct" approach. Make reasonable design decisions, document them, and focus on getting working code that passes your tests.
-
---
-
-## Resources
-- MIPS tutorial: https://minnie.tuhs.org/CompArch/Resources/mips_quick_tutorial.html
-- code generation with MIPS notes: https://pages.cs.wisc.edu/~aws/courses/cs536/readings/codegen.html
-- This is the MIPS simulator: https://spimsimulator.sourceforge.net
