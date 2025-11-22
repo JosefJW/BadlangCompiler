@@ -17,14 +17,37 @@ import edu.wisc.Stmt.Return;
 import edu.wisc.Stmt.Var;
 import edu.wisc.Stmt.While;
 
+/**
+ * SymbolTableConstructor is an AST visitor responsible for constructing symbol tables
+ * for a Badlang program. It walks the abstract syntax tree and collects all variable,
+ * parameter, and function declarations, recording their types, offsets, and initial values.
+ *
+ * For functions, it also constructs a local symbol table for their parameters and local
+ * variables. By the end of the traversal, every function and global scope has an associated
+ * symbol table that can be used for code generation.
+ *
+ * This visitor assumes that variable renaming has already been performed, so all identifiers
+ * are globally unique. It does not perform type checking or name analysis; it only records
+ * the structure of identifiers in symbol tables.
+ */
 public class SymbolTableConstructor implements Stmt.Visitor<Void>, Expr.Visitor<Object> {
-	private final SymbolTable globalSymbolTable = new SymbolTable();
-	private SymbolTable currentSymbolTable = globalSymbolTable;
+	private final SymbolTable globalSymbolTable = new SymbolTable(); // Stores the global symbol table for the program
+	private SymbolTable currentSymbolTable = globalSymbolTable; // Holds either the global symbol table or the symbol table for the current function
 
+	/**
+	 * Gives the global symbol table to be used for code generation
+	 * 
+	 * @return The global symbol table
+	 */
 	public SymbolTable getGlobalSymbolTable() {
 		return globalSymbolTable;
 	}
 
+	/**
+	 * Evaluate the binary expression for global variable initial values.
+	 * 
+	 * @param expr The binary expression to evaluate
+	 */
 	@Override
 	public Object visitBinaryExpr(Binary expr) {
 		Object left = expr.left.accept(this);
@@ -54,11 +77,21 @@ public class SymbolTableConstructor implements Stmt.Visitor<Void>, Expr.Visitor<
 		}
 	}
 
+	/**
+	 * Evaluate the literal expression for global variable initial values.
+	 * 
+	 * @param expr The literal expression to evaluate
+	 */
 	@Override
 	public Object visitLiteralExpr(Literal expr) {
 		return expr.value;
 	}
 
+	/**
+	 * Evaluate the unary expression for global variable initial values.
+	 * 
+	 * @param expr The unary expression to evaluate
+	 */
 	@Override
 	public Object visitUnaryExpr(Unary expr) {
 		Object right = expr.right.accept(this);
@@ -70,16 +103,31 @@ public class SymbolTableConstructor implements Stmt.Visitor<Void>, Expr.Visitor<
 		}
 	}
 
+	/**
+	 * Evaluate the variable expression for global variable initial values.
+	 * 
+	 * @param expr The variable expression to evaluate
+	 */
 	@Override
 	public Object visitVariableExpr(Variable expr) {
 		return globalSymbolTable.getVariableInitialValue(expr.name);
 	}
 
+	/**
+	 * Do nothing; global variable initial values cannot be contingent on executable code.
+	 * 
+	 * @param expr The call expression
+	 */
 	@Override
 	public Object visitCallExpr(Call expr) {
 		return null;
 	}
 
+	/**
+	 * Traverse the block of statements
+	 * 
+	 * @param stmt The block statement to traverse
+	 */
 	@Override
 	public Void visitBlockStmt(Block stmt) {
 		for (Stmt s : stmt.statements) {
@@ -88,13 +136,24 @@ public class SymbolTableConstructor implements Stmt.Visitor<Void>, Expr.Visitor<
 		return null;
 	}
 
+	/**
+	 * Cannot define variables; do nothing.
+	 * 
+	 * @param stmt The expression statement
+	 */
 	@Override
 	public Void visitExpressionStmt(Expression stmt) {
 		return null;
 	}
 
+	/**
+	 * Create a local symbol table for a function.
+	 * 
+	 * @param stmt The function statement to create a local symbol table for
+	 */
 	@Override
 	public Void visitFunctionStmt(Function stmt) {
+		// Create the function's local symbol table
 		currentSymbolTable = new SymbolTable();
 		for (Stmt.Parameter p : stmt.params) {
 			currentSymbolTable.putParameter(p.name(), p.type());
@@ -102,11 +161,19 @@ public class SymbolTableConstructor implements Stmt.Visitor<Void>, Expr.Visitor<
 		for (Stmt s : stmt.body) {
 			s.accept(this);
 		}
+
+		// Put the function in the global symbol table
 		globalSymbolTable.putFunction(stmt.name, stmt.returnType, currentSymbolTable);
+		
 		currentSymbolTable = globalSymbolTable;		
 		return null;
 	}
 
+	/**
+	 * Traverse the branches of the if statement to search for local variable declarations.
+	 * 
+	 * @param stmt The if statement to traverse
+	 */
 	@Override
 	public Void visitIfStmt(If stmt) {
 		stmt.thenBranch.accept(this);
@@ -114,26 +181,52 @@ public class SymbolTableConstructor implements Stmt.Visitor<Void>, Expr.Visitor<
 		return null;
 	}
 
+	/**
+	 * Cannot define variables; do nothing.
+	 * 
+	 * @param stmt The print statement
+	 */
 	@Override
 	public Void visitPrintStmt(Print stmt) {
 		return null;
 	}
 
+	/**
+	 * Cannot define variables; do nothing.
+	 * 
+	 * @param stmt The printsp statement
+	 */
 	@Override
 	public Void visitPrintspStmt(Printsp stmt) {
 		return null;
 	}
 
+	/**
+	 * Cannot define variables; do nothing.
+	 * 
+	 * @param stmt The println statement
+	 */
 	@Override
 	public Void visitPrintlnStmt(Println stmt) {
 		return null;
 	}
 
+	/**
+	 * Cannot define variables; do nothing.
+	 * 
+	 * @param stmt The return statement
+	 */
 	@Override
 	public Void visitReturnStmt(Return stmt) {
 		return null;
 	}
 
+	/**
+	 * Add the variable to the symbol table.
+	 * If the variable is a global variable, check for its initialization value.
+	 * 
+	 * @param stmt The variable statement
+	 */
 	@Override
 	public Void visitVarStmt(Var stmt) {
 		Object initializer = null;
@@ -142,11 +235,21 @@ public class SymbolTableConstructor implements Stmt.Visitor<Void>, Expr.Visitor<
 		return null;
 	}
 
+	/**
+	 * Cannot define variables; do nothing.
+	 * 
+	 * @param stmt The assign statement
+	 */
 	@Override
 	public Void visitAssignStmt(Assign stmt) {
 		return null;
 	}
 
+	/**
+	 * Traverse the while body searching for local variable declarations.
+	 * 
+	 * @param stmt The while statement to traverse
+	 */
 	@Override
 	public Void visitWhileStmt(While stmt) {
 		stmt.body.accept(this);
