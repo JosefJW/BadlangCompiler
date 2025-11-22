@@ -19,7 +19,7 @@ class Identifier {
     private final IdentifierType iType;
     private final List<Stmt.Parameter> parameters;
     private Boolean initialized;
-    private String uniqueLabel;
+    private String uniqueLabel = "NO_UNIQUE_LABEL";
 
     /**
      * Initialize a new Identifier

@@ -26,6 +26,7 @@ public class FunctionCollector implements Stmt.Visitor<Void>, Expr.Visitor<Void>
 	private List<String> programLines;
 	List<Error> errors = new ArrayList<Error>();
     int errorCount = 0;
+    int functionCount = 0; // Used for giving functions unique labels
 
     public FunctionCollector(List<String> programLines) {
         this.programLines = programLines;
@@ -84,7 +85,11 @@ public class FunctionCollector implements Stmt.Visitor<Void>, Expr.Visitor<Void>
             errors.add(new Error(Arrays.asList(new Problem(stmt.getHeaderStartCol(), stmt.getHeaderEndCol(), stmt.getStartLine(), stmt.getEndLine(), msg)), programLines.subList(stmt.getHeaderStartLine()-1, stmt.getHeaderEndLine()), ErrorType.NAME));
             errorCount++;
         }
-        else environment.declare(stmt.name, stmt.returnType, IdentifierType.FUNCTION, stmt.params, false);
+        else {
+            environment.declare(stmt.name, stmt.returnType, IdentifierType.FUNCTION, stmt.params, false);
+            if (!stmt.name.equals("main")) environment.setUniqueLabel(stmt.name, stmt.name + "_" + functionCount++);
+            else environment.setUniqueLabel(stmt.name, stmt.name);
+        }
         return null;
     }
 

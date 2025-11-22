@@ -15,7 +15,7 @@ import java.util.List;
  * If output-file is not specified, outputs to stdout.
  */
 public class Main {
-    static Boolean debug = true;
+    static Boolean debug = false;
     
     public static void main(String[] args) {
         if (args.length < 1) {

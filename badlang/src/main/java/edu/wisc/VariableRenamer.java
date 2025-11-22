@@ -159,7 +159,6 @@ public class VariableRenamer implements Stmt.Visitor<Void>, Expr.Visitor<Void>{
     public Void visitFunctionStmt(Function stmt) {
         // Replace the function name with a unique identifiers
         if (!stmt.name.equals("main")) {
-            environment.setUniqueLabel(stmt.name, stmt.name + "_" + varCount++);
             stmt.name = environment.getUniqueLabel(stmt.name);
         }
         else {

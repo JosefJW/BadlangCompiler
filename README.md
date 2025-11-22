@@ -26,7 +26,7 @@ The first step is lexing. The compiler will pass over a text file containing Bad
 After lexing, the tokens are parsed into expressions and statements. This is the step where the AST is formed. If an unrecognized string of tokens is found, the compiler will halt and inform the user without generating any code.
 
 ### Function Collecting
-After parsing, the compiler goes through the top level of the AST, collecting function signatures and storing them in an environment. This is done to hoist the functions, so that they can be called from anywhere in the code. If a function is declared twice, the compiler will store this information as an Error, but it will continue with Name Analysis and Type Analysis before halting.
+After parsing, the compiler goes through the top level of the AST, collecting function signatures and storing them in an environment. This is done to hoist the functions, so that they can be called from anywhere in the code. Due to the functions being hoisted, this will also generate new labels for the functions to be referred by during the Variable Renaming step. If a function is declared twice, the compiler will store this information as an Error, but it will continue with Name Analysis and Type Analysis before halting.
 
 ### Name Analysis
 After collecting the function signatures, the compiler will then perform name analysis. Name analysis ensures that variables are declared in an appropriate scope when the variable is used. It also looks for name collisions between variables and functions. Any issues discovered here will be stored as an Error, but the compiler will continue with Type Analysis before halting.
