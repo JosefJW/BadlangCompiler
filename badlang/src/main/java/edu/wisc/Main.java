@@ -219,7 +219,7 @@ public class Main {
             if (debug) System.out.println(STConstructor.getGlobalSymbolTable());
 
             // Generate code from the AST
-            CodeGenerator generator = new CodeGenerator(STConstructor.getGlobalSymbolTable());
+            MIPSGenerator generator = new MIPSGenerator(STConstructor.getGlobalSymbolTable());
             String assemblyCode = generator.generate(program);
             
             // Write the assembly code to output file or stdout

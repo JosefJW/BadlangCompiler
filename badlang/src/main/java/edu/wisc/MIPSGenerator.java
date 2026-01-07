@@ -34,13 +34,13 @@ import edu.wisc.Stmt.While;
  * type analysis, and variable renaming, so all identifiers are unique and
  * semantically correct.
  */
-public class CodeGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>{
+public class MIPSGenerator implements Stmt.Visitor<String>, Expr.Visitor<String>{
 	private final SymbolTable globalSymbolTable; // Stores the global symbol table for the program
 	private SymbolTable currentSymbolTable; // Holds either the global symbol table or the symbol table for the current function
 	private String currentFunction = "main"; // Name of the current function for making labels
 	private int labelCounter = 0; // Value to use for making unique labels
 
-	public CodeGenerator(SymbolTable globalSymbolTable) {
+	public MIPSGenerator(SymbolTable globalSymbolTable) {
 		this.globalSymbolTable = globalSymbolTable;
 		this.currentSymbolTable = globalSymbolTable;
 	}
